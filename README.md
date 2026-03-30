@@ -207,13 +207,11 @@ python3 -m modules.exchange mail connect
 - Pentru task-uri collaborative, folosiți calendar events
 - Self-signed certificates necesită `verify_ssl: false`
 
-## Contribuții
+## Contributing
 
-1. Fork repository
-2. Branch (`git checkout -b feature/amazing-feature`)
-3. Commit (`git commit -m 'Add amazing feature'`)
-4. Push (`git push origin feature/amazing-feature`)
-5. Pull Request
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development standards and PR process.
+
+This project follows the [Hardshell Coding Standards](https://github.com/assistentalex/openclaw-hardshell).
 
 ## Licență
 
@@ -223,9 +221,9 @@ MIT License - vezi [LICENSE](LICENSE)
 
 - Dezvoltat pentru comunitatea OpenClaw
 - Publicat pe ClawHub
-- Repository: https://github.com/assistentalex/imm-romania
+- Repository: https://github.com/assistentalex/openclaw-imm-romania
 
 ## Suport
 
-- GitHub Issues: https://github.com/assistentalex/imm-romania/issues
+- GitHub Issues: https://github.com/assistentalex/openclaw-imm-romania/issues
 - Discord: [OpenClaw Community](https://discord.com/invite/clawd)
