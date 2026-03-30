@@ -29,3 +29,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Distribution lists management
 - Room booking
 - Delegate access support
+
+### Changed
+- **Task Management Concept**: Tasks are now managed in the assistant's inbox on behalf of the user. EWS does not support task assignment/delegation to other users. For collaborative tasks, use calendar events with attendees.
+
+## [1.0.0] - 2026-03-30

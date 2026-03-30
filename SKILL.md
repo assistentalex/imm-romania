@@ -85,6 +85,8 @@ imm-romania calendar respond --id EVENT_ID --response accept
 
 ### Tasks
 
+Task-urile sunt create și gestionate în inbox-ul asistentului, în numele utilizatorului deservit. Nu există delegare - task-urile sunt proprietatea asistentului care le gestionează pentru tine.
+
 ```bash
 # Listează task-uri
 imm-romania tasks list
@@ -160,7 +162,9 @@ Acest skill se activează pentru:
 
 ## Note
 
-- Task-urile sunt create în folderul Tasks al contului configurat
+- Task-urile sunt create și gestionate în inbox-ul asistentului, în numele utilizatorului deservit
+- EWS nu suportă task assignment (delegare către alți utilizatori)
+- Pentru task-uri collaborative, folosiți calendar events cu invitați
 - Pentru Exchange Online (Office 365), configurarea poate diferi
 - Self-signed certificates necesită `verify_ssl: false`
 

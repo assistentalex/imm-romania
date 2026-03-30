@@ -135,6 +135,8 @@ python3 scripts/cli.py calendar delete --id EVENT_ID
 
 ### Tasks Operations
 
+Task-urile sunt create și gestionate în inbox-ul asistentului, în numele utilizatorului deservit.
+
 ```bash
 # Listează task-uri
 python3 scripts/cli.py tasks list
@@ -157,6 +159,12 @@ python3 scripts/cli.py tasks complete --id TASK_ID
 
 # Șterge task
 python3 scripts/cli.py tasks delete --id TASK_ID --hard
+
+# Sincronizare cu Exchange
+python3 scripts/cli.py sync sync              # Sincronizează task-urile
+python3 scripts/cli.py sync status            # Afișează statistici sync
+python3 scripts/cli.py sync reminders         # Trimite email cu task-uri overdue/upcoming
+python3 scripts/cli.py sync link-calendar    # Creează eveniment din task
 ```
 
 ## Structură
@@ -257,8 +265,9 @@ logger.debug("Request details", {"method": "GET", "url": "/ews/api"})
 
 ## Limitări
 
-- Task-urile sunt create în folderul Tasks al contului configurat
-- Nu suportă delegarea task-urilor către alți utilizatori
+- Task-urile sunt create și gestionate în inbox-ul asistentului, în numele utilizatorului deservit
+- Nu suportă delegarea task-urilor către alți utilizatori (EWS nu suportă task assignment)
+- Pentru task-uri collaborative, folosiți calendar events cu invitați
 - Pentru Exchange Online (Office 365), configurarea poate diferi
 
 ## Contribuții
