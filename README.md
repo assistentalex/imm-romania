@@ -1,296 +1,222 @@
 # IMM-Romania
 
-**Email, Calendar și Tasks pentru Exchange on-premises**
+**Asistent complet pentru IMM-uri din România - Email, Calendar, Tasks și Fișiere**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Descriere
 
-IMM-Romania este un skill OpenClaw care oferă acces complet la Microsoft Exchange Server on-premises (2016/2019) prin EWS (Exchange Web Services). Ideal pentru IMM-uri din România care folosesc Exchange on-premises.
+IMM-Romania este un skill OpenClaw care integrează toate serviciile necesare pentru un IMM:
 
-### Funcționalități
+- 📧 **Exchange** - Email, Calendar, Tasks (on-premises 2016/2019)
+- 📁 **Nextcloud** - Gestionare fișiere și colaborare
+- 🧠 **Memory** - Context persistent prin LCM plugin
 
-- 📧 **Email** - citire, trimitere, răspunsuri, draft-uri, atașamente
-- 📅 **Calendar** - evenimente, întâlniri, disponibilitate, invitații
-- ✅ **Tasks** - creare, listare, actualizare, completare
+Ideal pentru întreprinderile mici și mijlocii din România care folosesc infrastructură on-premises.
+
+## Module
+
+| Modul | Serviciu | Descriere |
+|-------|----------|-----------|
+| **Exchange** | Email, Calendar, Tasks | Operații complete pentru Exchange on-premises |
+| **Nextcloud** | Fișiere | Upload, download, organizare fișiere |
+| **Memory** | Context | Istoric conversații persistente (LCM plugin) |
 
 ## Instalare
 
 ```bash
-# Clonează sau descarcă skill-ul în directorul skills
+# Instalează în OpenClaw skills directory
 cd ~/.openclaw/skills/
-git clone https://github.com/your-repo/imm-romania.git
+git clone https://github.com/assistentalex/imm-romania.git
 
-# Sau copiază manual directorul imm-romania
-```
-
-## Cerințe
-
-### Exchange Server
-- Microsoft Exchange Server 2016 sau 2019 (on-premises)
-- EWS (Exchange Web Services) activat
-- Cont cu permisiuni de mailbox
-
-### Python Dependencies
-```bash
-pip3 install exchangelib requests_ntlm
+# Instalează dependențe
+pip3 install exchangelib requests requests_ntlm
 ```
 
 ## Configurare
 
-### Variabile de Environment
+### Exchange
 
 ```bash
-export EXCHANGE_SERVER="https://mail.example.com/EWS/Exchange.asmx"
-export EXCHANGE_USERNAME="your-username"
+export EXCHANGE_SERVER="https://mail.firmade.it/EWS/Exchange.asmx"
+export EXCHANGE_USERNAME="asistent.alex"
 export EXCHANGE_PASSWORD="your-password"
-export EXCHANGE_EMAIL="your-email@example.com"
-
-# Opțional (pentru self-signed certificates)
-export EXCHANGE_VERIFY_SSL="false"
+export EXCHANGE_EMAIL="asistent.alex@firmade.it"
+export EXCHANGE_VERIFY_SSL="false"  # pentru self-signed certs
 ```
 
-### Fișier de Configurare
+### Nextcloud
 
-Creează `config.yaml`:
-
-```yaml
-exchange:
-  server: https://mail.example.com/EWS/Exchange.asmx
-  username: ${EXCHANGE_USERNAME}
-  password: ${EXCHANGE_PASSWORD}
-  email: your-email@example.com
-  verify_ssl: false
+```bash
+export NEXTCLOUD_URL="https://cloud.firmade.it"
+export NEXTCLOUD_USERNAME="alex.bogdan"
+export NEXTCLOUD_APP_PASSWORD="your-app-password"  # din Nextcloud > Settings > Security
 ```
+
+### Memory (LCM Plugin)
+
+```bash
+openclaw plugins install @martian-engineering/lossless-claw
+```
+
+Vezi [references/setup.md](references/setup.md) pentru configurare completă.
 
 ## Utilizare
 
-### Email Operations
+### Email
 
 ```bash
-# Test conexiune
-python3 scripts/cli.py mail connect
+# Conexiune
+imm-romania mail connect
 
-# Listează email-uri
-python3 scripts/cli.py mail read --limit 10
-python3 scripts/cli.py mail read --folder Inbox --unread
-python3 scripts/cli.py mail read --from "sender@example.com" --subject "important"
+# Listează
+imm-romania mail read --limit 10 --unread
 
-# Trimite email
-python3 scripts/cli.py mail send \
-  --to "recipient@example.com" \
-  --subject "Hello" \
-  --body "This is a test message"
-
-# Email cu HTML
-python3 scripts/cli.py mail send \
-  --to "recipient@example.com" \
-  --subject "HTML Email" \
-  --body "<h1>Hello</h1><p>This is <b>HTML</b> content.</p>" \
-  --html
-
-# Răspunde
-python3 scripts/cli.py mail reply --id EMAIL_ID --body "Thank you!"
-
-# Marchează citit
-python3 scripts/cli.py mail mark --id EMAIL_ID --read
+# Trimite
+imm-romania mail send --to "client@ex.com" --subject "Ofertă" --body "Mesaj"
 ```
 
-### Calendar Operations
+### Calendar
 
 ```bash
-# Evenimentele de azi
-python3 scripts/cli.py calendar today
+# Azi
+imm-romania cal today
 
-# Evenimente săptămâna aceasta
-python3 scripts/cli.py calendar week
-
-# Listează evenimente
-python3 scripts/cli.py calendar list --days 7
-python3 scripts/cli.py calendar list --start "2024-01-01" --end "2024-01-31"
-
-# Creează eveniment
-python3 scripts/cli.py calendar create \
-  --subject "Team Meeting" \
-  --start "2024-01-15 14:00" \
-  --duration 60 \
-  --location "Conference Room"
-
-# Eveniment cu invitați
-python3 scripts/cli.py calendar create \
-  --subject "Client Call" \
-  --start "2024-01-15 15:00" \
-  --to "client@example.com,colleague@example.com" \
-  --reminder 15
-
-# Actualizează eveniment
-python3 scripts/cli.py calendar update --id EVENT_ID --location "Room 201"
-
-# Răspunde la meeting
-python3 scripts/cli.py calendar respond --id EVENT_ID --response accept --body "I'll be there"
-
-# Șterge eveniment
-python3 scripts/cli.py calendar delete --id EVENT_ID
+# Creează
+imm-romania cal create --subject "Meeting" --start "2024-01-15 14:00" --duration 60
 ```
 
-### Tasks Operations
-
-Task-urile sunt create și gestionate în inbox-ul asistentului, în numele utilizatorului deservit.
+### Tasks
 
 ```bash
-# Listează task-uri
-python3 scripts/cli.py tasks list
-python3 scripts/cli.py tasks list --all
-python3 scripts/cli.py tasks list --status in_progress
-python3 scripts/cli.py tasks list --overdue
+# Listează
+imm-romania tasks list --overdue
 
-# Creează task
-python3 scripts/cli.py tasks create \
-  --subject "Review proposal" \
-  --body "Review and provide feedback" \
-  --due "+7d" \
-  --priority high
+# Creează
+imm-romania tasks create --subject "Follow-up" --due "+7d" --priority high
 
-# Actualizează task
-python3 scripts/cli.py tasks update --id TASK_ID --status in_progress
+# Completează
+imm-romania tasks complete --id TASK_ID
+```
 
-# Marchează complet
-python3 scripts/cli.py tasks complete --id TASK_ID
+### Fișiere
 
-# Șterge task
-python3 scripts/cli.py tasks delete --id TASK_ID --hard
+```bash
+# Listează
+imm-romania files list /Documents/
 
-# Sincronizare cu Exchange
-python3 scripts/cli.py sync sync              # Sincronizează task-urile
-python3 scripts/cli.py sync status            # Afișează statistici sync
-python3 scripts/cli.py sync reminders         # Trimite email cu task-uri overdue/upcoming
-python3 scripts/cli.py sync link-calendar    # Creează eveniment din task
+# Upload
+imm-romania files upload /local/report.pdf /Documents/
+
+# Download
+imm-romania files download /Documents/report.pdf /local/
+```
+
+### Workflow-uri Combinate
+
+```bash
+# Download din Nextcloud și trimite pe email
+imm-romania files download /Documents/offer.pdf /tmp/
+imm-romania mail send --to "client@example.com" --subject "Ofertă" --attach /tmp/offer.pdf
+
+# Creează task din email (manual, bazat pe conținut)
+# LCM memorează contextul pentru referință ulterioară
 ```
 
 ## Structură
 
 ```
 imm-romania/
-├── SKILL.md          # Documentație OpenClaw
-├── README.md         # Acest fișier
-├── LICENSE           # MIT License
-├── config.template.yaml
-├── .env.template
-├── .gitignore
-└── scripts/
-    ├── __init__.py
-    ├── cli.py        # Entry point unificat
-    ├── config.py     # Gestionare configurație
-    ├── connection.py # Conexiune Exchange
-    ├── utils.py      # Funcții utilitare
-    ├── mail.py       # Operații email
-    ├── cal.py        # Operații calendar
-    └── tasks.py      # Operații tasks
+├── SKILL.md              # Documentație OpenClaw (meta-skill)
+├── README.md             # Acest fișier
+├── LICENSE               # MIT License
+├── CHANGELOG.md          # Istoric schimbări
+├── requirements.txt      # Dependențe Python
+├── config.template.yaml  # Template configurație
+├── modules/
+│   ├── exchange/          # Email, Calendar, Tasks
+│   │   ├── SKILL.md
+│   │   ├── mail.py
+│   │   ├── cal.py
+│   │   ├── tasks.py
+│   │   └── sync.py
+│   └── nextcloud/         # Fișiere
+│       ├── SKILL.md
+│       └── nextcloud.py
+├── references/
+│   └── setup.md          # Ghid instalare detaliat
+├── assets/
+│   └── config.template.yaml
+├── scripts/
+│   ├── imm-romania.py    # Orchestrator CLI
+│   └── tests/
+└── tests/
+    └── test_all.py
 ```
 
-## Logging
-
-IMM-Romania are un sistem de logging configurabil. În mod implicit, log-urile sunt scrise în `~/.imm-romania/logs/imm.log`.
-
-### Configurare prin Environment Variables
+## Testare
 
 ```bash
-# Nivel de log (DEBUG, INFO, WARNING, ERROR, CRITICAL)
-export IMM_LOG_LEVEL="INFO"
+# Rulează toate testele
+python3 -m pytest tests/
 
-# Fișier de log (default: ~/.imm-romania/logs/imm.log)
-export IMM_LOG_FILE="/var/log/imm-romania.log"
-
-# Format (json, text, colored)
-export IMM_LOG_FORMAT="json"
-
-# Dimensiune maximă fișier (MB)
-export IMM_LOG_MAX_SIZE="10"
-
-# Număr fișiere backup
-export IMM_LOG_BACKUP_COUNT="5"
-
-# Afișare în consolă (true/false)
-export IMM_LOG_CONSOLE="true"
-```
-
-### Exemple de Log
-
-**Format JSON** (pentru integrare cu ELK, Splunk, etc.):
-```json
-{"timestamp": "2026-03-30T00:48:26.459929Z", "level": "INFO", "logger": "imm-romania", "message": "Connected to Exchange", "data": {"server": "https://...", "email": "a***@domain.com"}}
-```
-
-**Format Colored** (pentru development):
-```
-2026-03-30 00:48:26 [INFO] Connected to Exchange | {"server": "https://...", "email": "a***@domain.com"}
-```
-
-### Utilizare Programatică
-
-```python
-from logger import get_logger
-
-logger = get_logger()
-logger.info("Email sent", {"to": "user@example.com", "subject": "Hello"})
-logger.error("Connection failed", {"error": "timeout"})
-logger.debug("Request details", {"method": "GET", "url": "/ews/api"})
+# Teste specifice
+python3 -m pytest tests/test_all.py -v -k "mail"
+python3 -m pytest tests/test_all.py -v -k "calendar"
+python3 -m pytest tests/test_all.py -v -k "tasks"
 ```
 
 ## Troubleshooting
 
-### Eroare de conexiune
+### Exchange SSL Error
 
+```bash
+export EXCHANGE_VERIFY_SSL="false"
 ```
-{"ok": false, "error": "Connection refused"}
-```
-- Verifică URL-ul serverului Exchange
-- Verifică că EWS este activat
-- Verifică credențialele
 
-### SSL Certificate Error
+### Exchange Authentication Failed
 
-```
-{"ok": false, "error": "SSL certificate verify failed"}
-```
-- Setează `EXCHANGE_VERIFY_SSL=false` sau `verify_ssl: false` în config
+1. Verifică username (încearcă `DOMAIN\username` sau doar `username`)
+2. Verifică password
+3. Verifică că utilizatorul are mailbox
 
-### Autentificare eșuată
+### Nextcloud 401 Unauthorized
 
+1. Generează app password din Nextcloud > Settings > Security
+2. Nu folosi password-ul principal
+
+### Module Import Error
+
+```bash
+cd ~/.openclaw/skills/imm-romania
+python3 -m modules.exchange mail connect
 ```
-{"ok": false, "error": "Authentication failed"}
-```
-- Verifică username și password
-- Verifică că utilizatorul are permisiuni de mailbox
 
 ## Limitări
 
-- Task-urile sunt create și gestionate în inbox-ul asistentului, în numele utilizatorului deservit
-- Nu suportă delegarea task-urilor către alți utilizatori (EWS nu suportă task assignment)
-- Pentru task-uri collaborative, folosiți calendar events cu invitați
-- Pentru Exchange Online (Office 365), configurarea poate diferi
+- Tasks sunt create în inbox-ul asistentului (EWS nu suportă task assignment)
+- Pentru task-uri collaborative, folosiți calendar events
+- Self-signed certificates necesită `verify_ssl: false`
 
 ## Contribuții
 
-Contribuțiile sunt binevenite! Te rog să:
-
-1. Faci fork la repository
-2. Creezi un branch pentru feature (`git checkout -b feature/amazing-feature`)
-3. Comiți schimbările (`git commit -m 'Add amazing feature'`)
-4. Faci push la branch (`git push origin feature/amazing-feature`)
-5. Deschizi un Pull Request
+1. Fork repository
+2. Branch (`git checkout -b feature/amazing-feature`)
+3. Commit (`git commit -m 'Add amazing feature'`)
+4. Push (`git push origin feature/amazing-feature`)
+5. Pull Request
 
 ## Licență
 
-Acest proiect este licențiat sub MIT License - vezi fișierul [LICENSE](LICENSE) pentru detalii.
+MIT License - vezi [LICENSE](LICENSE)
 
 ## Autori
 
 - Dezvoltat pentru comunitatea OpenClaw
 - Publicat pe ClawHub
+- Repository: https://github.com/assistentalex/imm-romania
 
 ## Suport
 
-Pentru probleme și întrebări:
-- Deschide un issue pe GitHub
-- Discuții pe Discord: [OpenClaw Community](https://discord.com/invite/clawd)
+- GitHub Issues: https://github.com/assistentalex/imm-romania/issues
+- Discord: [OpenClaw Community](https://discord.com/invite/clawd)

@@ -1,173 +1,158 @@
+---
+name: imm-romania
+description: Complete business assistant for Romanian SMEs (IMM-uri). Integrates Exchange (email, calendar, tasks), Nextcloud (file management), and persistent memory via LCM plugin. Use when the user needs email operations, calendar management, task tracking, file operations, or combined workflows like "send report and archive copy", "create task from email", "schedule meeting with file attachment", "search conversation history".
+---
+
 # IMM-Romania
 
-Email, Calendar și Tasks pentru Exchange on-premises. Ideal pentru IMM-uri din România.
+Asistent complet pentru IMM-uri din România care integrează:
 
-## Descriere
+- **Exchange**: Email, Calendar, Tasks (on-premises 2016/2019)
+- **Nextcloud**: Gestionare fișiere și colaborare
+- **Memory**: Context persistent prin LCM plugin
 
-Acest skill oferă acces complet la funcționalitățile Microsoft Exchange Server on-premises (2016/2019) prin EWS (Exchange Web Services):
+## Module Disponibile
 
-- **Email:** citire, trimitere, răspunsuri, draft-uri, atașamente
-- **Calendar:** evenimente, întâlniri, disponibilitate, invitații
-- **Tasks:** creare, listare, actualizare, completare
+| Modul | Descriere | Comandă |
+|-------|-----------|---------|
+| **Exchange** | Email, Calendar, Tasks | `imm-romania <mail\|cal\|tasks\|sync>` |
+| **Nextcloud** | Gestionare fișiere | `imm-romania files <list\|upload\|download\|...>` |
+| **Memory** | Context persistent | Automat via LCM plugin |
 
-## Cerințe
-
-- Exchange Server 2016 sau 2019 (on-premises)
-- EWS activat pe server
-- Cont cu permisiuni de mailbox
-
-## Configurare
-
-Setează variabilele de environment:
-
-```bash
-export EXCHANGE_SERVER="https://mail.example.com/EWS/Exchange.asmx"
-export EXCHANGE_USERNAME="your-username"
-export EXCHANGE_PASSWORD="your-password"
-export EXCHANGE_EMAIL="your-email@example.com"
-```
-
-Sau folosește un fișier de configurare `config.yaml`:
-
-```yaml
-exchange:
-  server: https://mail.example.com/EWS/Exchange.asmx
-  username: ${EXCHANGE_USERNAME}
-  password: ${EXCHANGE_PASSWORD}
-  email: your-email@example.com
-  verify_ssl: false  # pentru self-signed certs
-```
-
-## Utilizare
+## Utilizare Rapidă
 
 ### Email
 
 ```bash
-# Test conexiune
+# Conexiune
 imm-romania mail connect
 
 # Listează email-uri
 imm-romania mail read --limit 10
-imm-romania mail read --folder Inbox --unread
-imm-romania mail read --from "boss@company.com"
+imm-romania mail read --unread
 
 # Trimite email
-imm-romania mail send --to "user@example.com" --subject "Hello" --body "Message"
+imm-romania mail send --to "client@example.com" --subject "Ofertă" --body "..."
 
 # Răspunde
-imm-romania mail reply --id EMAIL_ID --body "Reply text"
-
-# Atașamente
-imm-romania mail list-attachments --id EMAIL_ID
-imm-romania mail download-attachment --id EMAIL_ID --name "file.pdf"
+imm-romania mail reply --id EMAIL_ID --body "Răspuns"
 ```
 
 ### Calendar
 
 ```bash
-# Listează evenimente
-imm-romania calendar list --days 7
-imm-romania calendar today
-imm-romania calendar week
+# Evenimente
+imm-romania cal today
+imm-romania cal week
+imm-romania cal list --days 7
 
 # Creează eveniment
-imm-romania calendar create --subject "Meeting" --start "2024-01-15 14:00" --duration 60
+imm-romania cal create --subject "Meeting" --start "2024-01-15 14:00" --duration 60
 
 # Cu invitați
-imm-romania calendar create --subject "Team Meeting" --start "2024-01-15 14:00" --to "user1@example.com,user2@example.com"
-
-# Actualizează
-imm-romania calendar update --id EVENT_ID --location "Room 101"
-
-# Răspunde la meeting
-imm-romania calendar respond --id EVENT_ID --response accept
+imm-romania cal create --subject "Team Meeting" --start "2024-01-15 14:00" --to "user1@example.com,user2@example.com"
 ```
 
 ### Tasks
 
-Task-urile sunt create și gestionate în inbox-ul asistentului, în numele utilizatorului deservit. Nu există delegare - task-urile sunt proprietatea asistentului care le gestionează pentru tine.
-
 ```bash
-# Listează task-uri
+# Listează
 imm-romania tasks list
 imm-romania tasks list --overdue
-imm-romania tasks list --status in_progress
 
-# Creează task
+# Creează
 imm-romania tasks create --subject "Review proposal" --due "+7d" --priority high
 
-# Actualizează
-imm-romania tasks update --id TASK_ID --status in_progress
-
-# Marchează complet
+# Completează
 imm-romania tasks complete --id TASK_ID
-
-# Șterge
-imm-romania tasks delete --id TASK_ID
 ```
 
-### Sincronizare Task-uri
+### Fișiere (Nextcloud)
 
 ```bash
-# Sincronizează task-uri cu Exchange
-imm-romania sync sync
+# Listează
+imm-romania files list /Documents/
 
-# Vezi status sincronizare
-imm-romania sync status
+# Upload
+imm-romania files upload /local/report.pdf /Documents/
 
-# Trimite reminder pentru task-uri overdue/upcoming
-imm-romania sync reminders --hours 24
-
-# Dry-run (arată ce s-ar trimite)
-imm-romania sync reminders --hours 24 --dry-run
-
-# Creează eveniment calendar din task
-imm-romania sync link-calendar --id TASK_ID --time "14:00" --duration 60
-
-# Cu invitație la sine
-imm-romania sync link-calendar --id TASK_ID --time "14:00" --invite
+# Download
+imm-romania files download /Documents/report.pdf /local/
 ```
 
-#### Funcționalități Sync
+## Workflow-uri Combinate
 
-| Comandă | Descriere |
-|---------|-----------|
-| `sync sync` | Sincronizează bidirecțional cu Exchange |
-| `sync status` | Afișează statistici și status sincronizare |
-| `sync reminders` | Trimite email cu task-uri overdue/upcoming |
-| `sync link-calendar` | Creează eveniment calendar din task |
+### Email + Fișiere
 
-#### State Tracking
+Trimite email cu atașament din Nextcloud:
 
-- Sincronizarea salvează state în `~/.openclaw/workspace/memory/task-sync-state.json`
-- Tracking prin `changekey` pentru detectare modificări
-- Istoric complet al task-urilor sincronizate
+```bash
+# Download din Nextcloud și trimite
+imm-romania files download /Documents/offer.pdf /tmp/
+imm-romania mail send --to "client@example.com" --subject "Ofertă" --body "..." --attach /tmp/offer.pdf
+```
 
-## Module
+Salvează atașament din email în Nextcloud:
 
-| Modul | Comandă | Descriere |
-|-------|---------|-----------|
-| Email | `mail` | Operații email complete |
-| Calendar | `calendar` sau `cal` | Gestionare evenimente și întâlniri |
-| Tasks | `tasks` | Gestionare sarcini |
-| Sync | `sync` | Sincronizare task-uri și reminder-uri |
+```bash
+# Download atașament și upload în Nextcloud
+imm-romania mail download-attachment --id EMAIL_ID --name "contract.pdf" --output /tmp/
+imm-romania files upload /tmp/contract.pdf /Contracts/
+```
 
-## Triggers
+### Calendar + Tasks
 
-Acest skill se activează pentru:
-- Citirea/trimiterea email-uri
-- Gestionarea calendarului și întâlnirilor
-- Crearea și gestionarea task-urilor
-- Întrebări despre program, email-uri, sarcini
+Creează task din meeting request:
 
-## Note
+```bash
+# După meeting, creează task pentru follow-up
+imm-romania tasks create --subject "Follow-up meeting X" --due "+3d"
+```
 
-- Task-urile sunt create și gestionate în inbox-ul asistentului, în numele utilizatorului deservit
+### Memory (LCM Plugin)
+
+Context persistent este gestionat automat de Lossless Context Management plugin.
+
+Tool-uri disponibile (dacă plugin-ul e instalat):
+
+- `lcm_grep` - Caută în istoricul conversațiilor
+- `lcm_describe` - Detalii despre un summary
+- `lcm_expand_query` - Expandare și răspuns la întrebări
+
+Exemple:
+
+- "Ce am discutat despre proiectul X?" → caută în istoric
+- "Când am trimis ultimul email către Y?" → combină LCM cu Exchange
+
+## Configurare Completă
+
+Vezi [references/setup.md](references/setup.md) pentru configurare detaliată.
+
+## Module Structure
+
+```
+modules/
+├── exchange/           # Email, Calendar, Tasks (Exchange on-prem)
+│   ├── SKILL.md       # Module documentation
+│   ├── mail.py        # Email operations
+│   ├── cal.py         # Calendar operations
+│   ├── tasks.py       # Task operations
+│   ├── sync.py        # Sync and reminders
+│   └── ...
+├── nextcloud/          # File management (WebDAV)
+│   ├── SKILL.md       # Module documentation
+│   └── nextcloud.py   # File operations
+└── (future modules)
+```
+
+## Notes
+
+- Tasks sunt create în inbox-ul asistentului, în numele utilizatorului
 - EWS nu suportă task assignment (delegare către alți utilizatori)
 - Pentru task-uri collaborative, folosiți calendar events cu invitați
-- Pentru Exchange Online (Office 365), configurarea poate diferi
 - Self-signed certificates necesită `verify_ssl: false`
+- LCM plugin trebuie instalat separat: `openclaw plugins install @martian-engineering/lossless-claw`
 
-## Licență
+## License
 
-MIT License - vezi fișierul LICENSE pentru detalii.
+MIT License - see LICENSE file for details.

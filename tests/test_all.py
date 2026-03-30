@@ -10,8 +10,8 @@ import json
 import unittest
 from unittest.mock import patch, MagicMock
 
-# Add scripts dir to path
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# Add modules dir to path
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'modules'))
 
 
 class TestUtils(unittest.TestCase):
