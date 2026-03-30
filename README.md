@@ -35,6 +35,15 @@ pip3 install exchangelib requests requests_ntlm
 
 ## Configurare
 
+### Input Files
+
+Utilizatorul poate încărca fișiere de input în Nextcloud:
+
+- **Folder pattern:** `Input from {owner_name}` unde `{owner_name}` este numele utilizatorului din USER.md
+- **Locație:** `/{shared_folder}/Input from {owner_name}/`
+- **Exemplu:** `/Alex's Assistant/Input from Alex/`
+- Verificați acest folder când utilizatorul menționează fișiere încărcate
+
 ### Exchange
 
 ```bash
