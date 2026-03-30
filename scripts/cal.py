@@ -215,7 +215,7 @@ def cmd_create(args):
         ) for email in to_list]
 
     optional_attendees = None
-    if args.cc:
+    if getattr(args, 'cc', None):
         cc_list = [a.strip() for a in args.cc.split(",")]
         optional_attendees = [Attendee(
             mailbox=Mailbox(email_address=email),
