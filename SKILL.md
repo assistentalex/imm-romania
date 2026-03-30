@@ -128,6 +128,27 @@ Exemple:
 
 Vezi [references/setup.md](references/setup.md) pentru configurare detaliată.
 
+## Coding Standards
+
+When writing or modifying Python code in this skill, follow the standards documented in:
+
+**`~/.openclaw/skills/hardshell/references/languages/python.md`**
+
+Key rules:
+
+- **PEP 8 formatting** - use `black` for formatting, `ruff` for linting
+- **Type hints** - required for all function parameters and return types
+- **Docstrings** - Google-style for all public functions and classes
+- **Testing** - `pytest` with `pytest-cov` for coverage
+- **Security** - never use `pickle` or `eval()` on untrusted input
+- **Dependencies** - use `uv` or `poetry`, pin versions, audit with `pip-audit`
+
+Load the full Python standards file before making code changes:
+
+```
+read ~/.openclaw/skills/hardshell/references/languages/python.md
+```
+
 ## Module Structure
 
 ```
