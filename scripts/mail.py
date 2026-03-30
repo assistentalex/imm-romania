@@ -9,6 +9,7 @@ import json
 import os
 import sys
 import tempfile
+import time
 from pathlib import Path
 
 # Add scripts dir to path for imports
@@ -16,6 +17,10 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from connection import get_account
 from utils import out, die, parse_datetime, parse_recipients, format_datetime, truncate
+from logger import get_logger
+
+
+_logger = get_logger()
 
 
 def email_to_dict(item, preview_len: int = 150) -> dict:

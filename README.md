@@ -180,6 +180,55 @@ imm-romania/
     └── tasks.py      # Operații tasks
 ```
 
+## Logging
+
+IMM-Romania are un sistem de logging configurabil. În mod implicit, log-urile sunt scrise în `~/.imm-romania/logs/imm.log`.
+
+### Configurare prin Environment Variables
+
+```bash
+# Nivel de log (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+export IMM_LOG_LEVEL="INFO"
+
+# Fișier de log (default: ~/.imm-romania/logs/imm.log)
+export IMM_LOG_FILE="/var/log/imm-romania.log"
+
+# Format (json, text, colored)
+export IMM_LOG_FORMAT="json"
+
+# Dimensiune maximă fișier (MB)
+export IMM_LOG_MAX_SIZE="10"
+
+# Număr fișiere backup
+export IMM_LOG_BACKUP_COUNT="5"
+
+# Afișare în consolă (true/false)
+export IMM_LOG_CONSOLE="true"
+```
+
+### Exemple de Log
+
+**Format JSON** (pentru integrare cu ELK, Splunk, etc.):
+```json
+{"timestamp": "2026-03-30T00:48:26.459929Z", "level": "INFO", "logger": "imm-romania", "message": "Connected to Exchange", "data": {"server": "https://...", "email": "a***@domain.com"}}
+```
+
+**Format Colored** (pentru development):
+```
+2026-03-30 00:48:26 [INFO] Connected to Exchange | {"server": "https://...", "email": "a***@domain.com"}
+```
+
+### Utilizare Programatică
+
+```python
+from logger import get_logger
+
+logger = get_logger()
+logger.info("Email sent", {"to": "user@example.com", "subject": "Hello"})
+logger.error("Connection failed", {"error": "timeout"})
+logger.debug("Request details", {"method": "GET", "url": "/ews/api"})
+```
+
 ## Troubleshooting
 
 ### Eroare de conexiune

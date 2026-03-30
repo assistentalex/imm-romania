@@ -5,6 +5,7 @@ Handles authentication and connection to Exchange server.
 
 import sys
 import os
+import time
 from typing import Optional
 
 # Add scripts directory to path for imports
@@ -22,15 +23,18 @@ except ImportError:
 
 from config import get_connection_config, clear_config
 from utils import die, mask_email
+from logger import get_logger
 
 
 # Global account instance (cached)
 _account: Optional[Account] = None
+_logger = get_logger()
 
 
 def check_dependencies() -> None:
     """Check if required dependencies are installed."""
     if not HAS_EXCHANGELIB:
+        _logger.error("Missing dependency: exchangelib")
         die(
             "exchangelib not installed. Run: pip3 install exchangelib requests_ntlm --break-system-packages"
         )
@@ -51,14 +55,22 @@ def get_account() -> Account:
     global _account
     
     if _account is not None:
+        _logger.debug("Using cached Exchange account")
         return _account
     
     check_dependencies()
     
     # Get connection configuration
+    _logger.debug("Loading connection configuration")
     conn_config = get_connection_config()
+    start_time = time.time()
     
     try:
+        _logger.info("Connecting to Exchange", {
+            "server": conn_config.get("server", "autodiscover"),
+            "email": mask_email(conn_config["email"])
+        })
+        
         # Create credentials
         credentials = Credentials(
             username=conn_config["username"],
@@ -91,11 +103,29 @@ def get_account() -> Account:
             access_type=access_type,
         )
         
+        duration = (time.time() - start_time) * 1000
+        _logger.log_connection(
+            server=conn_config.get("server", "autodiscover"),
+            email=mask_email(conn_config["email"]),
+            success=True
+        )
+        _logger.debug(f"Connected in {duration:.0f}ms")
+        
         return _account
     
     except UnauthorizedError:
+        _logger.log_connection(
+            server=conn_config.get("server", "autodiscover"),
+            email=mask_email(conn_config["email"]),
+            success=False
+        )
         die(f"Authentication failed. Check username and password for {mask_email(conn_config['email'])}")
     except Exception as e:
+        _logger.log_connection(
+            server=conn_config.get("server", "autodiscover"),
+            email=mask_email(conn_config["email"]),
+            success=False
+        )
         # Clear cached config on connection failure
         clear_config()
         die(f"Failed to connect to Exchange: {e}")
@@ -109,17 +139,19 @@ def test_connection() -> dict:
     """
     check_dependencies()
     
+    _logger.info("Testing Exchange connection")
     account = get_account()
     
     try:
         # Get folder counts
+        _logger.debug("Fetching mailbox statistics")
         inbox_total = account.inbox.total_count
         inbox_unread = account.inbox.unread_count
         calendar_count = account.calendar.total_count
         tasks_count = account.tasks.total_count
         contacts_count = account.contacts.total_count
         
-        return {
+        result = {
             "ok": True,
             "email": account.primary_smtp_address,
             "server": account.protocol.service_endpoint if hasattr(account, 'protocol') else "autodiscover",
@@ -129,7 +161,16 @@ def test_connection() -> dict:
             "tasks_count": tasks_count,
             "contacts_count": contacts_count,
         }
+        
+        _logger.info("Connection test successful", {
+            "email": mask_email(account.primary_smtp_address),
+            "inbox": inbox_total,
+            "unread": inbox_unread
+        })
+        
+        return result
     except Exception as e:
+        _logger.error(f"Connection test failed: {e}")
         die(f"Connection test failed: {e}")
 
 
