@@ -130,9 +130,12 @@ Vezi [references/setup.md](references/setup.md) pentru configurare detaliată.
 
 ## Coding Standards
 
-When writing or modifying Python code in this skill, follow the standards documented in:
+This project follows the [Hardshell Coding Standards](https://github.com/assistentalex/openclaw-hardshell).
 
-**`~/.openclaw/skills/hardshell/references/languages/python.md`**
+When writing or modifying Python code, see:
+- **[Python Standards](https://github.com/assistentalex/openclaw-hardshell/blob/main/references/languages/python.md)** - PEP 8, type hints, docstrings, security
+- **[Testing Standards](https://github.com/assistentalex/openclaw-hardshell/blob/main/references/testing.md)** - TDD, test pyramid, coverage
+- **[Git Workflow](https://github.com/assistentalex/openclaw-hardshell/blob/main/references/git-workflow.md)** - Conventional commits, PR process
 
 Key rules:
 
@@ -142,12 +145,6 @@ Key rules:
 - **Testing** - `pytest` with `pytest-cov` for coverage
 - **Security** - never use `pickle` or `eval()` on untrusted input
 - **Dependencies** - use `uv` or `poetry`, pin versions, audit with `pip-audit`
-
-Load the full Python standards file before making code changes:
-
-```
-read ~/.openclaw/skills/hardshell/references/languages/python.md
-```
 
 ## Module Structure
 
