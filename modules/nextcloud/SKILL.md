@@ -24,6 +24,15 @@ export NEXTCLOUD_APP_PASSWORD="your-app-password"
 
 ## Commands
 
+### shared
+List folders shared with the current user.
+
+```bash
+python3 -m modules.nextcloud shared
+```
+
+Returns: Name, owner, permissions, and path for each shared folder.
+
 ### list
 List files and folders in a directory.
 

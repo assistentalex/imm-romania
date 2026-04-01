@@ -63,6 +63,122 @@ class NextcloudClient:
             # Fallback to username on any error
             self.user_id = self.username
 
+    def _ocs_request(self, endpoint, params=None):
+        """Make an OCS API request.
+        
+        Args:
+            endpoint: OCS endpoint (e.g., '/apps/files_sharing/api/v1/shares')
+            params: Optional query parameters
+            
+        Returns:
+            Parsed XML root element or None on error
+        """
+        import xml.etree.ElementTree as ET
+        
+        ocs_url = f"{self.url}/ocs/v1.php{endpoint}"
+        headers = {'OCS-APIRequest': 'true'}
+        
+        try:
+            response = requests.get(ocs_url, auth=self.auth, headers=headers, 
+                                   params=params, timeout=30)
+            if response.status_code == 200:
+                return ET.fromstring(response.content)
+            else:
+                print(f"OCS API error: HTTP {response.status_code}")
+                return None
+        except ET.ParseError as e:
+            print(f"OCS XML parse error: {e}")
+            return None
+        except Exception as e:
+            print(f"OCS request error: {e}")
+            return None
+
+    def get_shared_with_me(self):
+        """Get list of shares shared with the current user.
+        
+        Returns:
+            List of dicts with share info: name, owner, permissions, path, share_type
+        """
+        import xml.etree.ElementTree as ET
+        
+        # OCS endpoint for shares shared with me
+        root = self._ocs_request('/apps/files_sharing/api/v1/shares', 
+                                params={'shared_with_me': 'true'})
+        
+        if root is None:
+            return []
+        
+        shares = []
+        
+        # Parse the OCS response
+        # Structure: <ocs><data><element>...</element></data></ocs>
+        data = root.find('.//data')
+        if data is None:
+            return []
+        
+        for elem in data.findall('.//element'):
+            share = {}
+            
+            # Get share ID
+            id_elem = elem.find('.//id')
+            share['id'] = id_elem.text if id_elem is not None else ''
+            
+            # Get file target (path in user's filesystem)
+            file_target = elem.find('.//file_target')
+            share['path'] = file_target.text if file_target is not None else ''
+            
+            # Get share type (0=user, 1=group, 3=public link, 6=federated)
+            share_type = elem.find('.//share_type')
+            share['share_type'] = share_type.text if share_type is not None else '0'
+            
+            # Get owner info
+            uid_owner = elem.find('.//uid_owner')
+            share['owner'] = uid_owner.text if uid_owner is not None else 'Unknown'
+            
+            displayname_owner = elem.find('.//displayname_owner')
+            share['owner_display'] = displayname_owner.text if displayname_owner is not None else share['owner']
+            
+            # Get permissions (1=read, 2=update, 4=create, 8=delete, 16=share)
+            permissions = elem.find('.//permissions')
+            share['permissions'] = self._parse_permissions(permissions.text if permissions is not None else '1')
+            
+            # Get name (for directory shares, this is the mount point name)
+            name_elem = elem.find('.//name')
+            if name_elem is not None and name_elem.text:
+                share['name'] = name_elem.text
+            else:
+                # Fallback to path basename
+                share['name'] = os.path.basename(share['path'].rstrip('/'))
+            
+            # Get share time
+            stime = elem.find('.//stime')
+            share['shared_at'] = stime.text if stime is not None else ''
+            
+            shares.append(share)
+        
+        return shares
+
+    def _parse_permissions(self, perm_value):
+        """Parse permission bitmask into readable string."""
+        try:
+            perm = int(perm_value)
+        except (ValueError, TypeError):
+            return 'unknown'
+        
+        perms = []
+        if perm & 1:
+            perms.append('read')
+        if perm & 2:
+            perms.append('write')
+        if perm & 4:
+            perms.append('create')
+        if perm & 8:
+            perms.append('delete')
+        if perm & 16:
+            perms.append('share')
+        
+        return '/'.join(perms) if perms else 'none'
+
     def _get_webdav_base_url(self):
         """Get the WebDAV base URL using user ID."""
         return f"{self.url}/remote.php/dav/files/{urllib.parse.quote(self.user_id, safe='')}"
@@ -407,6 +523,39 @@ def print_info(info):
     print(f"File ID:   {info.get('file_id', 'N/A')}")
 
 
+def print_shared(shares):
+    """Print shared with me results in a readable format."""
+    if not shares:
+        print("No shared folders found.")
+        return
+    
+    # Calculate column widths
+    max_name = max(len(s.get('name', '')) for s in shares) if shares else 10
+    max_owner = max(len(s.get('owner_display', s.get('owner', 'Unknown'))) for s in shares) if shares else 10
+    max_perms = max(len(s.get('permissions', '')) for s in shares) if shares else 10
+    
+    # Ensure minimum widths
+    max_name = max(max_name, 10)
+    max_owner = max(max_owner, 10)
+    max_perms = max(max_perms, 10)
+    
+    # Header
+    print(f"\n\U0001F4C1 Shared with me:")
+    print(f"{'Name':<{max_name}}  {'Owner':<{max_owner}}  {'Permissions':<{max_perms}}  {'Path'}")
+    print('-' * (max_name + max_owner + max_perms + 50))
+    
+    # Sort by name
+    for share in sorted(shares, key=lambda x: x.get('name', '')):
+        owner = share.get('owner_display', share.get('owner', 'Unknown'))
+        perms = share.get('permissions', 'unknown')
+        path = share.get('path', '/')
+        name = share.get('name', 'Unknown')
+        
+        print(f"{name:<{max_name}}  {owner:<{max_owner}}  {perms:<{max_perms}}  {path}")
+    
+    print(f"\nTo access a shared folder, use path: {path}")
+
+
 def main():
     """Main entry point."""
     if len(sys.argv) < 2:
@@ -423,6 +572,7 @@ def main():
         print("  move <source> <dest>            Move/rename")
         print("  copy <source> <dest>            Copy file or directory")
         print("  info <remote_path>              Get file/directory info")
+        print("  shared                          List folders shared with me")
         print()
         print("Set environment variables: NEXTCLOUD_URL, NEXTCLOUD_USERNAME, NEXTCLOUD_APP_PASSWORD")
         sys.exit(1)
@@ -489,6 +639,11 @@ def main():
             print_info(info)
             sys.exit(0)
         sys.exit(4)
+
+    elif command == 'shared':
+        shares = client.get_shared_with_me()
+        print_shared(shares)
+        sys.exit(0 if shares is not None else 4)
 
     else:
         print(f"Unknown command: {command}")
