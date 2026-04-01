@@ -224,5 +224,78 @@ class TestCLI(unittest.TestCase):
         self.assertIn("imm-romania", result.stdout)
 
 
+class TestAnalytics(unittest.TestCase):
+    """Tests for analytics module structure."""
+    
+    def test_analytics_functions_exist(self):
+        """Test that all analytics functions exist."""
+        from analytics import cmd_stats, cmd_top_senders, cmd_folders, cmd_heatmap
+        
+        self.assertTrue(callable(cmd_stats))
+        self.assertTrue(callable(cmd_top_senders))
+        self.assertTrue(callable(cmd_folders))
+        self.assertTrue(callable(cmd_heatmap))
+    
+    def test_add_parser_exists(self):
+        """Test that add_parser function exists for analytics."""
+        from analytics import add_parser
+        self.assertTrue(callable(add_parser))
+    
+    def test_get_email_stats_function(self):
+        """Test that get_email_stats function exists."""
+        from analytics import get_email_stats
+        self.assertTrue(callable(get_email_stats))
+
+
+class TestMarkAllRead(unittest.TestCase):
+    """Tests for mark-all-read functionality."""
+    
+    def test_mark_all_read_function_exists(self):
+        """Test that mark_all_read function exists in mail module."""
+        from mail import cmd_mark_all_read
+        self.assertTrue(callable(cmd_mark_all_read))
+    
+    def test_get_folder_for_mark_all_read(self):
+        """Test that get_folder works for standard folders."""
+        from mail import get_folder
+        from unittest.mock import MagicMock
+        
+        # Mock account
+        mock_account = MagicMock()
+        mock_account.inbox = "inbox_folder"
+        mock_account.trash = "trash_folder"
+        mock_account.sent = "sent_folder"
+        mock_account.drafts = "drafts_folder"
+        mock_account.junk = "junk_folder"
+        mock_account.outbox = "outbox_folder"
+        mock_account.root.walk = MagicMock(return_value=[])
+        
+        # Test standard folders
+        self.assertEqual(get_folder(mock_account, "inbox"), "inbox_folder")
+        self.assertEqual(get_folder(mock_account, "INBOX"), "inbox_folder")
+        self.assertEqual(get_folder(mock_account, "trash"), "trash_folder")
+        self.assertEqual(get_folder(mock_account, "sent"), "sent_folder")
+        self.assertEqual(get_folder(mock_account, "drafts"), "drafts_folder")
+        self.assertEqual(get_folder(mock_account, "junk"), "junk_folder")
+        self.assertEqual(get_folder(mock_account, "spam"), "junk_folder")
+        self.assertEqual(get_folder(mock_account, "deleted"), "trash_folder")
+
+
+class TestSync(unittest.TestCase):
+    """Tests for sync module structure."""
+    
+    def test_sync_functions_exist(self):
+        """Test that sync functions exist."""
+        from sync import cmd_sync, cmd_reminders
+        
+        self.assertTrue(callable(cmd_sync))
+        self.assertTrue(callable(cmd_reminders))
+    
+    def test_add_parser_exists(self):
+        """Test that add_parser function exists for sync."""
+        from sync import add_parser
+        self.assertTrue(callable(add_parser))
+
+
 if __name__ == "__main__":
     unittest.main()
