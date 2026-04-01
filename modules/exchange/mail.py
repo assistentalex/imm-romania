@@ -330,6 +330,46 @@ def cmd_mark(args):
     out({"ok": True, "message": f"Marked as {state}"})
 
 
+def cmd_mark_all_read(args):
+    """Mark all unread emails as read (skips calendar items)."""
+    from exchangelib.items import Message
+
+    account = get_account()
+    folder = get_folder(account, getattr(args, 'folder', 'inbox'))
+
+    # Get all unread items
+    unread = list(folder.filter(is_read=False))
+    _logger.info(f"Found {len(unread)} unread items")
+
+    marked = 0
+    skipped = 0
+    errors = []
+
+    for item in unread:
+        # Skip non-Message items (calendar, etc.)
+        if not isinstance(item, Message):
+            skipped += 1
+            _logger.debug(f"Skipping non-message: {item.subject[:50]}")
+            continue
+
+        try:
+            item.is_read = True
+            item.save(update_fields=["is_read"])
+            marked += 1
+            _logger.debug(f"Marked: {item.subject[:50]}")
+        except Exception as e:
+            errors.append(f"{item.subject[:30]}: {str(e)[:50]}")
+            _logger.warning(f"Error marking {item.subject[:30]}: {e}")
+
+    out({
+        "ok": True,
+        "marked": marked,
+        "skipped": skipped,
+        "errors": errors,
+        "total_unread": len(unread)
+    })
+
+
 def cmd_download_attachment(args):
     """Download an attachment from an email."""
 
@@ -581,6 +621,11 @@ def add_parser(subparsers):
     grp.add_argument("--read", action="store_true", help="Mark as read")
     grp.add_argument("--unread", action="store_true", help="Mark as unread")
     p_mark.set_defaults(func=cmd_mark)
+
+    # mark-all-read
+    p_markall = subparsers.add_parser("mark-all-read", help="Mark all unread emails as read")
+    p_markall.add_argument("--folder", "-f", default="inbox", help="Folder (default: inbox)")
+    p_markall.set_defaults(func=cmd_mark_all_read)
 
     # list-attachments
     p_latt = subparsers.add_parser("list-attachments", help="List attachments")
