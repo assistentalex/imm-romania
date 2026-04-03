@@ -328,7 +328,11 @@ def cmd_complete(args: argparse.Namespace) -> None:
 
 
 def cmd_delete(args: argparse.Namespace) -> None:
-    """Delete a task."""
+    """Delete a task.
+    
+    Note: Tasks do not support soft-delete (move_to_trash) via delegate access.
+    Using hard delete by default. Use --hard only for permanent deletion (same behavior).
+    """
     account = get_account()
 
     try:
@@ -338,10 +342,10 @@ def cmd_delete(args: argparse.Namespace) -> None:
 
     subject = task.subject
 
-    if args.hard:
-        task.delete()
-    else:
-        task.move_to_trash()
+    # Tasks don't have a proper trash folder behavior like email.
+    # move_to_trash fails with ErrorCannotDeleteObject via delegate access.
+    # Use delete() which works correctly.
+    task.delete()
 
     out({"ok": True, "message": f"Task '{subject}' deleted", "id": args.id})
 
@@ -485,9 +489,6 @@ def add_parser(subparsers: argparse.ArgumentParser) -> None:
     # delete
     p_delete = subparsers.add_parser("delete", help="Delete a task")
     p_delete.add_argument("--id", "-i", required=True, help="Task ID")
-    p_delete.add_argument(
-        "--hard", action="store_true", help="Permanently delete (no trash)"
-    )
     p_delete.set_defaults(func=cmd_delete)
 
 
