@@ -85,22 +85,37 @@ python3 -m modules.exchange cal respond --id EVENT_ID --response accept
 ### Tasks (tasks)
 
 ```bash
-# List tasks
+# List tasks (own mailbox)
 python3 -m modules.exchange tasks list
 python3 -m modules.exchange tasks list --overdue
 python3 -m modules.exchange tasks list --status in_progress
 
+# List tasks from another mailbox (delegate access)
+python3 -m modules.exchange tasks list --mailbox user@example.com
+
 # Create task (in your own mailbox)
 python3 -m modules.exchange tasks create --subject "Review proposal" --due "+7d" --priority high
 
-# Assign task to another user (requires delegate permissions)
+# Create task in another user's mailbox (requires delegate permissions)
 python3 -m modules.exchange tasks create --assign-to user@example.com --subject "Review report" --due "2024-01-20"
-python3 -m modules.exchange tasks assign --to user@example.com --subject "Review report" --due "2024-01-20"
 
-# Update/Complete
+# Get task details
+python3 -m modules.exchange tasks get --id TASK_ID
+python3 -m modules.exchange tasks get --id TASK_ID --mailbox user@example.com
+
+# Update task
+python3 -m modules.exchange tasks update --id TASK_ID --subject "Updated subject"
 python3 -m modules.exchange tasks update --id TASK_ID --status in_progress
+
+# Complete task
 python3 -m modules.exchange tasks complete --id TASK_ID
+
+# Move task to Deleted Items (trash)
+python3 -m modules.exchange tasks trash --id TASK_ID
+python3 -m modules.exchange tasks trash --mailbox user@example.com --id TASK_ID  # Requires delete permission
 ```
+
+**Note on trash:** The `trash` command moves tasks to the Deleted Items folder. For delegate mailboxes, this requires the service account to have delete permissions. If you only have Editor permissions, trash will fail with "Object cannot be deleted."
 
 ### Sync (sync)
 
