@@ -115,7 +115,40 @@ python3 -m modules.exchange tasks trash --id TASK_ID
 python3 -m modules.exchange tasks trash --mailbox user@example.com --id TASK_ID  # Requires delete permission
 ```
 
-**Note on trash:** The `trash` command moves tasks to the Deleted Items folder. For delegate mailboxes, this requires the service account to have delete permissions. If you only have Editor permissions, trash will fail with "Object cannot be deleted."
+**Note on trash:** The `trash` command moves tasks to the Deleted Items folder. For delegate mailboxes, the service account has Editor permissions (can create/edit/complete tasks) but **cannot delete tasks**. This is intentional - tasks are preserved until you manually delete them from Outlook. When trash fails, the error message suggests completing the task or deleting manually from Outlook.
+
+### Error Handling
+
+All task commands return informative error messages in Romanian with:
+
+- `error`: Clear error message
+- `cause`: Why it happened
+- `alternatives`: Available options
+
+**Example - Permission denied:**
+```json
+{
+  "ok": false,
+  "error": "Task-urile pot fi șterse doar manual din Outlook.",
+  "cause": "Asistentul are permisiuni de Editor (poate crea/edita/completa), dar nu poate șterge task-urile. Aceasta e o limitare intenționată - task-urile se păstrează până le ștergi tu.",
+  "alternatives": [
+    {"action": "complete", "description": "Marchează task-ul ca finalizat (recomandat)"},
+    {"action": "manual_delete", "description": "Șterge manual din Outlook sau OWA"}
+  ]
+}
+```
+
+**Example - Task not found:**
+```json
+{
+  "ok": false,
+  "error": "Task-ul nu a fost găsit.",
+  "cause": "Task ID xxx nu există sau este invalid.",
+  "alternatives": [
+    {"action": "list", "description": "Listează task-urile disponibile"}
+  ]
+}
+```
 
 ### Sync (sync)
 
