@@ -45,8 +45,20 @@ def cmd_connect(args: argparse.Namespace) -> None:
 
 
 def cmd_list(args: argparse.Namespace) -> None:
-    """List tasks from the tasks folder."""
-    account = get_account()
+    """List tasks from the tasks folder.
+    
+    Use --mailbox to list tasks from another user's mailbox via delegate access.
+    Without --mailbox, lists tasks from the service account's mailbox.
+    """
+    # Determine which account to use
+    if getattr(args, 'mailbox', None):
+        from connection import get_account_for
+        try:
+            account = get_account_for(args.mailbox)
+        except Exception as e:
+            die(f"Failed to access mailbox {args.mailbox}: {e}")
+    else:
+        account = get_account()
 
     # Build query
     query = account.tasks.all()
@@ -89,16 +101,32 @@ def cmd_list(args: argparse.Namespace) -> None:
     for item in items:
         tasks.append(task_to_dict(item))
 
-    out({"ok": True, "count": len(tasks), "tasks": tasks})
+    out({
+        "ok": True, 
+        "count": len(tasks), 
+        "mailbox": account.primary_smtp_address,
+        "tasks": tasks
+    })
 
 
 def cmd_get(args: argparse.Namespace) -> None:
-    """Get details of a specific task."""
-    account = get_account()
+    """Get details of a specific task.
+    
+    Use --mailbox to get a task from another user's mailbox via delegate access.
+    """
+    # Determine which account to use
+    if getattr(args, 'mailbox', None):
+        from connection import get_account_for
+        try:
+            account = get_account_for(args.mailbox)
+        except Exception as e:
+            die(f"Failed to access mailbox {args.mailbox}: {e}")
+    else:
+        account = get_account()
 
     try:
         task = account.tasks.get(id=args.id)
-        out({"ok": True, "task": task_to_dict(task, detailed=True)})
+        out({"ok": True, "mailbox": account.primary_smtp_address, "task": task_to_dict(task, detailed=True)})
     except Exception:
         die(f"Task not found: {args.id}")
 
@@ -233,8 +261,19 @@ def cmd_assign(args: argparse.Namespace) -> None:
 
 
 def cmd_update(args: argparse.Namespace) -> None:
-    """Update an existing task."""
-    account = get_account()
+    """Update an existing task.
+    
+    Use --mailbox to update a task in another user's mailbox via delegate access.
+    """
+    # Determine which account to use
+    if getattr(args, 'mailbox', None):
+        from connection import get_account_for
+        try:
+            account = get_account_for(args.mailbox)
+        except Exception as e:
+            die(f"Failed to access mailbox {args.mailbox}: {e}")
+    else:
+        account = get_account()
 
     try:
         task = account.tasks.get(id=args.id)
@@ -307,8 +346,19 @@ def cmd_update(args: argparse.Namespace) -> None:
 
 
 def cmd_complete(args: argparse.Namespace) -> None:
-    """Mark a task as completed."""
-    account = get_account()
+    """Mark a task as completed.
+    
+    Use --mailbox to complete a task in another user's mailbox via delegate access.
+    """
+    # Determine which account to use
+    if getattr(args, 'mailbox', None):
+        from connection import get_account_for
+        try:
+            account = get_account_for(args.mailbox)
+        except Exception as e:
+            die(f"Failed to access mailbox {args.mailbox}: {e}")
+    else:
+        account = get_account()
 
     try:
         task = account.tasks.get(id=args.id)
@@ -324,7 +374,38 @@ def cmd_complete(args: argparse.Namespace) -> None:
     except Exception as e:
         die(f"Failed to complete task: {e}")
 
-    out({"ok": True, "message": "Task marked as completed", "task": task_to_dict(task)})
+    out({"ok": True, "message": "Task marked as completed", "mailbox": account.primary_smtp_address, "task": task_to_dict(task)})
+
+
+def cmd_trash(args: argparse.Namespace) -> None:
+    """Move a task to the Deleted Items folder.
+    
+    Use --mailbox to trash a task in another user's mailbox via delegate access.
+    This is safer than hard delete as the task can be recovered from Deleted Items.
+    """
+    # Determine which account to use
+    if getattr(args, 'mailbox', None):
+        from connection import get_account_for
+        try:
+            account = get_account_for(args.mailbox)
+        except Exception as e:
+            die(f"Failed to access mailbox {args.mailbox}: {e}")
+    else:
+        account = get_account()
+
+    try:
+        task = account.tasks.get(id=args.id)
+    except Exception:
+        die(f"Task not found: {args.id}")
+
+    task_info = task_to_dict(task)
+
+    try:
+        task.move_to_trash()
+    except Exception as e:
+        die(f"Failed to move task to trash: {e}")
+
+    out({"ok": True, "message": "Task moved to Deleted Items", "mailbox": account.primary_smtp_address, "task": task_info})
 
 
 def task_to_dict(task: Task, detailed: bool = False) -> Dict[str, Any]:
@@ -389,11 +470,19 @@ def add_parser(subparsers: argparse.ArgumentParser) -> None:
     p_list.add_argument(
         "--overdue", action="store_true", help="Show only overdue tasks"
     )
+    p_list.add_argument(
+        "--mailbox", "-m",
+        help="Target mailbox (email address). Use to access tasks via delegate permissions."
+    )
     p_list.set_defaults(func=cmd_list)
 
     # get
     p_get = subparsers.add_parser("get", help="Get task details")
     p_get.add_argument("--id", "-i", required=True, help="Task ID")
+    p_get.add_argument(
+        "--mailbox", "-m",
+        help="Target mailbox (email address). Use to access tasks via delegate permissions."
+    )
     p_get.set_defaults(func=cmd_get)
 
     # create
@@ -456,12 +545,29 @@ def add_parser(subparsers: argparse.ArgumentParser) -> None:
         help="New status",
     )
     p_update.add_argument("--percent", type=int, help="Completion percentage (0-100)")
+    p_update.add_argument(
+        "--mailbox", "-m",
+        help="Target mailbox (email address). Use to access tasks via delegate permissions."
+    )
     p_update.set_defaults(func=cmd_update)
 
     # complete
     p_complete = subparsers.add_parser("complete", help="Mark task as completed")
     p_complete.add_argument("--id", "-i", required=True, help="Task ID")
+    p_complete.add_argument(
+        "--mailbox", "-m",
+        help="Target mailbox (email address). Use to access tasks via delegate permissions."
+    )
     p_complete.set_defaults(func=cmd_complete)
+
+    # trash
+    p_trash = subparsers.add_parser("trash", help="Move task to Deleted Items folder")
+    p_trash.add_argument("--id", "-i", required=True, help="Task ID")
+    p_trash.add_argument(
+        "--mailbox", "-m",
+        help="Target mailbox (email address). Use to access tasks via delegate permissions."
+    )
+    p_trash.set_defaults(func=cmd_trash)
 
 
 def main() -> None:
