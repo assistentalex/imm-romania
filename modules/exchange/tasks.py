@@ -54,17 +54,17 @@ def get_error_response(error: Exception, action: str, task_id: str = None, mailb
     if "cannot be deleted" in error_str.lower() or "delete" in error_str.lower():
         return {
             "ok": False,
-            "error": f"Nu ai permisiuni de ștergere pentru acest mailbox.",
-            "cause": f"Service account are permisiuni de Editor, nu de Delete pe mailbox-ul {mailbox or 'propriu'}.",
+            "error": f"Task-urile pot fi șterse doar manual din Outlook.",
+            "cause": f"Asistentul are permisiuni de Editor (poate crea/edita/completa), dar nu poate șterge task-urile. Aceasta e o limitare intenționată - task-urile se păstrează până le ștergi tu.",
             "alternatives": [
                 {
                     "action": "complete",
-                    "description": "Marchează task-ul ca finalizat (necesită permisiuni de Editor)",
+                    "description": "Marchează task-ul ca finalizat (recomandat)",
                     "command": f"tasks complete --mailbox {mailbox} --id {task_id}" if mailbox else f"tasks complete --id {task_id}"
                 },
                 {
-                    "action": "ask_admin",
-                    "description": "Cere permisiuni de Delete de la administratorul Exchange"
+                    "action": "manual_delete",
+                    "description": "Șterge manual din Outlook sau OWA"
                 }
             ]
         }
