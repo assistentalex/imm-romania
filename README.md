@@ -1,10 +1,8 @@
 <div align="center">
 
-# IMM-Romania: Asistentul pentru business românesc
+# OpenClaw-IMM-Romania
 
-**Asistentul tău digital pentru Exchange și Nextcloud**
-
-Email · Calendar · Task-uri · Fișiere — totul din terminalul tău
+**Asistentul tău digital ce folosește Exchange și Nextcloud în locul tău. Ține minte totul folosind un skill revolutionar de memorie care păstrează toate conversațiile.**
 
 [![Version](https://img.shields.io/badge/version-0.3.0-blue.svg)](https://github.com/assistentalex/openclaw-imm-romania)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
