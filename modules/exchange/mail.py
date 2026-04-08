@@ -19,7 +19,7 @@ from logger import get_logger
 _logger = get_logger()
 
 
-def email_to_dict(item, preview_len: int = 150) -> dict:
+def email_to_dict(item, preview_len: int = 150, folder_name: str = "") -> dict:
     """Serialize an exchangelib Message to a plain dict."""
     sender = ""
     if item.sender:
@@ -64,6 +64,7 @@ def email_to_dict(item, preview_len: int = 150) -> dict:
         "preview": preview,
         "has_attachments": len(attachments) > 0,
         "attachments": attachments,
+        "folder": folder_name,
     }
 
 
@@ -136,7 +137,7 @@ def cmd_read(args):
 
     qs = qs[: args.limit]
 
-    emails = [email_to_dict(item) for item in qs]
+    emails = [email_to_dict(item, folder_name=args.folder) for item in qs]
     out({"ok": True, "count": len(emails), "emails": emails})
 
 
@@ -246,7 +247,6 @@ def cmd_send(args):
 
 def cmd_draft(args):
     """Create a draft email."""
-    from exchangelib import Message, HTMLBody, FileAttachment
     from pathlib import Path
 
     account = get_account()

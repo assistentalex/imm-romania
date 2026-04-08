@@ -16,9 +16,9 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from connection import get_account
 from utils import out, die
 
-from logger import get_logger
 
-_logger = get_logger()
+    out({"ok": False, "error": message})
+    sys.exit(code)
 
 
 def parse_datetime(s: str) -> datetime:
@@ -426,175 +426,35 @@ def cmd_availability(args):
 # ── CLI ───────────────────────────────────────────────────────────────────────
 
 
-def main():
-    parser = argparse.ArgumentParser(
-        prog="cal.py",
-        description="Exchange calendar operations",
+def cmd_today(args):
+    """List today's events."""
+    today = datetime.now().strftime("%Y-%m-%d")
+
+    # Create new args namespace for list command
+    list_args = argparse.Namespace(
+        start=today,
+        end=None,
+        days=1,
+        limit=args.limit or 20,
     )
-    sub = parser.add_subparsers(dest="cmd", required=True)
 
-    # connect
-    sub.add_parser("connect", help="Test calendar connection")
-    sub.add_parser("connect").set_defaults(func=cmd_connect)
-
-    # list
-    p_list = sub.add_parser("list", help="List events in date range")
-    p_list.add_argument("--start", "-s", help="Start date (YYYY-MM-DD or YYYY-MM-DD HH:MM)")
-    p_list.add_argument("--end", "-e", help="End date")
-    p_list.add_argument("--days", "-d", type=int, default=7, help="Days to show (default 7)")
-    p_list.add_argument("--limit", "-n", type=int, default=50, help="Max events")
-    p_list.set_defaults(func=cmd_list)
-
-    # today
-    p_today = sub.add_parser("today", help="List today's events")
-    p_today.add_argument("--limit", "-n", type=int, default=20, help="Max events")
-    p_today.set_defaults(func=cmd_today)
-
-    # week
-    p_week = sub.add_parser("week", help="List this week's events")
-    p_week.add_argument("--limit", "-n", type=int, default=50, help="Max events")
-    p_week.set_defaults(func=cmd_week)
-
-    # get
-    p_get = sub.add_parser("get", help="Get event details")
-    p_get.add_argument("--id", "-i", required=True, help="Event ID")
-    p_set_defaults(func=cmd_get)
-
-    # create
-    p_create = sub.add_parser("create", help="Create event")
-    p_create.add_argument("--subject", "-s", required=True, help="Event subject")
-    p_create.add_argument("--start", required=True, help="Start date/time (YYYY-MM-DD HH:MM)")
-    p_create.add_argument("--end", help="End date/time (YYYY-MM-DD HH:MM)")
-    p_create.add_argument("--duration", type=int, default=60, help="Duration in minutes")
-    p_create.add_argument("--location", "-l", help="Location")
-    p_create.add_argument("--body", "-b", help="Body/description")
-    p_create.add_argument("--to", "-t", help="Attendees (comma-separated emails)")
-    p_create.add_argument("--all-day", action="store_true", help="All-day event")
-    p_create.add_argument("--reminder", type=int, help="Reminder minutes before")
-    p_create.set_defaults(func=cmd_create)
-
-    # update
-    p_update = sub.add_parser("update", help="Update event")
-    p_update.add_argument("--id", "-i", required=True, help="Event ID")
-    p_update.add_argument("--subject", "-s", help="New subject")
-    p_update.add_argument("--location", "-l", help="New location")
-    p_update.add_argument("--start", help="New start date/time")
-    p_update.add_argument("--end", help="New end date/time")
-    p_update.add_argument("--body", "-b", help="New body")
-    p_update.set_defaults(func=cmd_update)
-
-    # delete
-    p_delete = sub.add_parser("delete", help="Delete event")
-    p_delete.add_argument("--id", "-i", required=True, help="Event ID")
-    p_delete.set_defaults(func=cmd_delete)
-
-    # respond
-    p_respond = sub.add_parser("respond", help="Respond to meeting")
-    p_respond.add_argument("--id", "-i", required=True, help="Event ID")
-    p_respond.add_argument("--response", "-r", required=True, choices=["accept", "decline", "tentative"], help="Response")
-    p_respond.add_argument("--body", "-b", help="Response message")
-    p_respond.set_defaults(func=cmd_respond)
-
-    # availability
-    p_avail = sub.add_parser("availability", help="Check availability")
-    p_avail.add_argument("--email", "-e", required=True, help="Email address")
-    p_avail.add_argument("--start", "-s", required=True, help="Start date")
-    p_avail.add_argument("--end", help="End date")
-    p_avail.set_defaults(func=cmd_availability)
-
-    args = parser.parse_args()
-
-    dispatch = {
-        "connect": cmd_connect,
-        "list": cmd_list,
-        "today": cmd_today,
-        "week": cmd_week,
-        "get": cmd_get,
-        "create": cmd_create,
-        "update": cmd_update,
-        "delete": cmd_delete,
-        "respond": cmd_respond,
-        "availability": cmd_availability,
-    }
-
-    try:
-        dispatch[args.cmd](args)
-    except SystemExit:
-        raise
-    except Exception as e:
-        die(str(e))
+    return cmd_list(list_args)
 
 
-def add_parser(subparsers):
-    """Add calendar commands to CLI parser."""
-    # connect
-    p_connect = subparsers.add_parser("connect", help="Test calendar connection")
-    p_connect.set_defaults(func=cmd_connect)
+def cmd_week(args):
+    """List this week's events."""
+    now = datetime.now()
+    start_of_week = (now - timedelta(days=now.weekday())).strftime("%Y-%m-%d")
+    end_of_week = (now + timedelta(days=7 - now.weekday())).strftime("%Y-%m-%d")
 
-    # list
-    p_list = subparsers.add_parser("list", help="List events in date range")
-    p_list.add_argument("--start", "-s", help="Start date (YYYY-MM-DD or YYYY-MM-DD HH:MM)")
-    p_list.add_argument("--end", "-e", help="End date")
-    p_list.add_argument("--days", "-d", type=int, default=7, help="Days to show (default 7)")
-    p_list.add_argument("--limit", "-n", type=int, default=50, help="Max events")
-    p_list.set_defaults(func=cmd_list)
+    list_args = argparse.Namespace(
+        start=start_of_week,
+        end=end_of_week,
+        days=7,
+        limit=args.limit or 50,
+    )
 
-    # today
-    p_today = subparsers.add_parser("today", help="List today's events")
-    p_today.add_argument("--limit", "-n", type=int, default=20, help="Max events")
-    p_today.set_defaults(func=cmd_today)
-
-    # week
-    p_week = subparsers.add_parser("week", help="List this week's events")
-    p_week.add_argument("--limit", "-n", type=int, default=50, help="Max events")
-    p_week.set_defaults(func=cmd_week)
-
-    # get
-    p_get = subparsers.add_parser("get", help="Get event details")
-    p_get.add_argument("--id", "-i", required=True, help="Event ID")
-    p_get.set_defaults(func=cmd_get)
-
-    # create
-    p_create = subparsers.add_parser("create", help="Create event")
-    p_create.add_argument("--subject", "-s", required=True, help="Event subject")
-    p_create.add_argument("--start", required=True, help="Start date/time (YYYY-MM-DD HH:MM)")
-    p_create.add_argument("--end", help="End date/time (YYYY-MM-DD HH:MM)")
-    p_create.add_argument("--duration", type=int, default=60, help="Duration in minutes")
-    p_create.add_argument("--location", "-l", help="Location")
-    p_create.add_argument("--body", "-b", help="Body/description")
-    p_create.add_argument("--to", "-t", help="Attendees (comma-separated emails)")
-    p_create.add_argument("--all-day", action="store_true", help="All-day event")
-    p_create.add_argument("--reminder", type=int, help="Reminder minutes before")
-    p_create.set_defaults(func=cmd_create)
-
-    # update
-    p_update = subparsers.add_parser("update", help="Update event")
-    p_update.add_argument("--id", "-i", required=True, help="Event ID")
-    p_update.add_argument("--subject", "-s", help="New subject")
-    p_update.add_argument("--location", "-l", help="New location")
-    p_update.add_argument("--start", help="New start date/time")
-    p_update.add_argument("--end", help="New end date/time")
-    p_update.add_argument("--body", "-b", help="New body")
-    p_update.set_defaults(func=cmd_update)
-
-    # delete
-    p_delete = subparsers.add_parser("delete", help="Delete event")
-    p_delete.add_argument("--id", "-i", required=True, help="Event ID")
-    p_delete.set_defaults(func=cmd_delete)
-
-    # respond
-    p_respond = subparsers.add_parser("respond", help="Respond to meeting")
-    p_respond.add_argument("--id", "-i", required=True, help="Event ID")
-    p_respond.add_argument("--response", "-r", required=True, choices=["accept", "decline", "tentative"], help="Response")
-    p_respond.add_argument("--body", "-b", help="Response message")
-    p_respond.set_defaults(func=cmd_respond)
-
-    # availability
-    p_avail = subparsers.add_parser("availability", help="Check availability")
-    p_avail.add_argument("--email", "-e", required=True, help="Email address")
-    p_avail.add_argument("--start", "-s", required=True, help="Start date")
-    p_avail.add_argument("--end", help="End date")
-    p_avail.set_defaults(func=cmd_availability)
+    return cmd_list(list_args)
 
 
 if __name__ == "__main__":

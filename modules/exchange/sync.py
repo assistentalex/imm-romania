@@ -23,7 +23,7 @@ except ImportError:
     HAS_EXCHANGELIB = False
 
 from connection import get_account, check_dependencies
-from utils import out, die, format_datetime
+from utils import out, die, format_datetime, task_to_dict
 from logger import get_logger
 
 # Sync state file location
@@ -53,23 +53,6 @@ def save_sync_state(state: Dict[str, Any]) -> None:
     SYNC_STATE_DIR.mkdir(parents=True, exist_ok=True)
     with open(SYNC_STATE_FILE, "w") as f:
         json.dump(state, f, indent=2, default=str)
-
-
-def task_to_dict(task: Task) -> Dict[str, Any]:
-    """Convert Task object to dictionary for sync state."""
-    return {
-        "id": task.id,
-        "changekey": task.changekey,
-        "subject": task.subject,
-        "status": str(task.status),
-        "due_date": format_datetime(task.due_date),
-        "start_date": format_datetime(task.start_date),
-        "percent_complete": task.percent_complete or 0,
-        "importance": str(task.importance),
-        "body": str(task.body)[:500] if task.body else None,
-        "datetime_created": format_datetime(task.datetime_created),
-        "datetime_received": format_datetime(task.datetime_received),
-    }
 
 
 def cmd_sync(args: argparse.Namespace) -> None:
