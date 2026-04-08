@@ -21,21 +21,13 @@ Ai un mic business în România? Folosești Exchange și Nextcloud?
 
 Conectează Exchange și Nextcloud la OpenClaw. Citești și trimiți emailuri, programezi întâlniri, gestionezi task-uri și operezi fișiere pe Nextcloud — totul din terminal sau chat, fără interfață grafică.
 
-## ⚡ În 30 de secunde
+## ⚡ Instalare rapidă în 3 pași
 
 ```bash
-# Instalează
 clawhub install imm-romania
-
-# Configurează (o singură dată)
-imm-romania exchange connect
-imm-romania nextcloud connect
-
-# Gata — folosește-l
-imm-romania exchange mail list --limit 5
-imm-romania exchange cal today
-imm-romania exchange tasks list
-imm-romania nextcloud files list
+imm-romania exchange connect    # configurează Exchange
+imm-romania nextcloud connect   # configurează Nextcloud
+imm-romania exchange mail list  # gata, funcționează
 ```
 
 ## 🧩 Module
