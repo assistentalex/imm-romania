@@ -18,6 +18,14 @@ try:
     HAS_EXCHANGELIB = True
 except ImportError:
     HAS_EXCHANGELIB = False
+    Account = None  # type: ignore
+    Configuration = None  # type: ignore
+    Credentials = None  # type: ignore
+    DELEGATE = None  # type: ignore
+    IMPERSONATION = None  # type: ignore
+
+    class UnauthorizedError(Exception):
+        pass
 
 from config import get_connection_config, clear_config
 from utils import die, mask_email
