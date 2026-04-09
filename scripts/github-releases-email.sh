@@ -66,7 +66,7 @@ fi
 
 # Prefer HTML if renderer produced content
 if [[ -n "$HTML" && "$HTML" != "<p>Invalid digest</p>" ]]; then
-  python3 "$IMM_CLI" mail send --to "$RECIPIENT" --subject "$SUBJECT" --html "$HTML"
+  python3 "$IMM_CLI" mail send --to "$RECIPIENT" --subject "$SUBJECT" --body "$HTML" --html
 else
   python3 "$IMM_CLI" mail send --to "$RECIPIENT" --subject "$SUBJECT" --body "$BODY"
 fi
