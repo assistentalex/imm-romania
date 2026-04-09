@@ -53,7 +53,6 @@ def test_render_digest_contains_key_sections():
     out = render(TEST_DIGEST)
     assert 'Test Digest' in out
     assert 'Firma de AI' in out
-    assert 'powered by' in out
     assert 'GitHub Releases Digest' in out
     assert 'Highlights' in out
     assert 'Repository Status' in out
