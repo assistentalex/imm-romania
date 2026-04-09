@@ -24,6 +24,13 @@ def main():
     """Main CLI entry point."""
     parser = argparse.ArgumentParser(
         description="MSP Manager - Managed Service Provider Client Management",
+        epilog=(
+            "Examples:\n"
+            "  imm-romania msp clients list\n"
+            "  imm-romania msp reminders status\n"
+            "  imm-romania msp github-check repos --config data/msp-github-repos.example.json\n"
+            "  imm-romania msp github-check digest --check --config data/msp-github-repos.example.json"
+        ),
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
 
@@ -108,7 +115,18 @@ def main():
     reminders_sub.add_parser("status", help="Get reminder status")
 
     # ===== GITHUB CHECKER =====
-    github_parser = subparsers.add_parser("github-check", help="Optional GitHub release checker")
+    github_parser = subparsers.add_parser(
+        "github-check",
+        help="Optional GitHub release checker",
+        description=(
+            "Monitor published GitHub releases for configured repositories.\n\n"
+            "Typical usage:\n"
+            "  imm-romania msp github-check repos --config data/msp-github-repos.example.json\n"
+            "  imm-romania msp github-check check --config data/msp-github-repos.example.json\n"
+            "  imm-romania msp github-check digest --check --config data/msp-github-repos.example.json"
+        ),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
     github_sub = github_parser.add_subparsers(dest="command", help="Command")
 
     github_repos = github_sub.add_parser("repos", help="Show configured repositories")

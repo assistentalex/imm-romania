@@ -189,6 +189,10 @@ Examples:
     # Upload file to Nextcloud
     imm-romania files upload /local/report.pdf /Documents/
 
+    # MSP GitHub checker (optional)
+    imm-romania msp github-check repos --config data/msp-github-repos.example.json
+    imm-romania msp github-check digest --check --config data/msp-github-repos.example.json
+
 For more information, see references/setup.md
 """)
 
