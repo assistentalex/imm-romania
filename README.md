@@ -2,13 +2,13 @@
 
 # OpenClaw-IMM-Romania
 
-**Exchange, Nextcloud, GitHub — one assistant. Built by [Firma de AI](https://www.firmade.ai), supported by [Firma de IT](https://firmade.it)**
+**Exchange, Nextcloud, GitHub — one assistant. Built by [Firma de AI](https://firmade.ai), supported by [Firma de IT](https://firmade.it)**
 
 [![Version](https://img.shields.io/badge/version-0.3.0-blue.svg)](https://github.com/assistentalex/openclaw-imm-romania)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![OpenClaw Skill](https://img.shields.io/badge/OpenClaw-Skill-green.svg)](https://clawhub.ai)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-brightgreen.svg)](https://www.python.org/)
-[![Firma de AI](https://img.shields.io/badge/built%20by-Firma%20de%20AI-6366f1.svg)](https://www.firmade.ai)
+[![Firma de AI](https://img.shields.io/badge/built%20by-Firma%20de%20AI-6366f1.svg)](https://firmade.ai)
 [![Firma de IT](https://img.shields.io/badge/supported%20by-Firma%20de%20IT-0ea5e9.svg)](https://firmade.it)
 
 </div>
@@ -136,7 +136,7 @@ MIT — vezi [LICENSE](LICENSE). Codul urmează [Hardshell Coding Standards](htt
 
 <div align="center">
 
-**[Built by Firma de AI](https://www.firmade.ai) · [Supported by Firma de IT](https://firmade.it) · Made with ☕ in România**
+**[Built by Firma de AI](https://firmade.ai) · [Supported by Firma de IT](https://firmade.it) · Made with ☕ in România**
 
 [Report Bug](https://github.com/assistentalex/openclaw-imm-romania/issues) · [Request Feature](https://github.com/assistentalex/openclaw-imm-romania/issues) · [Discord](https://discord.com/invite/clawd)
 
