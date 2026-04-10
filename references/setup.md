@@ -108,6 +108,7 @@ export NEXTCLOUD_APP_PASSWORD="your-app-password"
 python3 -m modules.nextcloud list /
 python3 -m modules.nextcloud list / --recursive
 python3 -m modules.nextcloud search contract /Clients/
+python3 -m modules.nextcloud summarize /Clients/contract.docx
 ```
 
 ## Configurare Memory (LCM)
@@ -168,6 +169,9 @@ python3 -m modules.exchange cal today
 # Test Nextcloud
 python3 -m modules.nextcloud list /
 python3 -m modules.nextcloud search contract /Clients/
+python3 -m modules.nextcloud extract-text /Clients/contract.docx
+python3 -m modules.nextcloud summarize /Clients/contract.docx
+python3 -m modules.nextcloud ask-file /Clients/contract.docx "When is the renewal due?"
 python3 -m modules.nextcloud share-list
 
 # Test Tasks

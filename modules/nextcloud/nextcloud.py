@@ -3,11 +3,15 @@
 
 from __future__ import annotations
 
+import io
 import json
 import os
+import re
 import sys
 import urllib.parse
 import xml.etree.ElementTree as ET
+import zipfile
+from collections import Counter
 from pathlib import Path
 from typing import Any
 
@@ -50,6 +54,26 @@ DEFAULT_TIMEOUT = 60
 TRANSFER_TIMEOUT = 300
 WEBDAV_SUCCESS_CODES = {200, 201, 204, 207}
 PUBLIC_LINK_SHARE_TYPE = "3"
+TEXT_FILE_EXTENSIONS = {
+    ".txt",
+    ".md",
+    ".markdown",
+    ".csv",
+    ".json",
+    ".yaml",
+    ".yml",
+    ".py",
+    ".js",
+    ".ts",
+    ".html",
+    ".xml",
+}
+STOPWORDS = {
+    "the", "and", "for", "that", "with", "this", "from", "have", "are", "was",
+    "but", "not", "you", "your", "into", "about", "will", "they", "them", "their",
+    "din", "pentru", "care", "este", "sunt", "sau", "ceva", "asta", "acest", "aceasta",
+    "prin", "fara", "după", "dupa", "când", "cand", "care", "iar", "mai", "foarte",
+}
 
 
 class NextcloudClient:
@@ -651,6 +675,192 @@ class NextcloudClient:
         print(f"Revoked share link: {share_id}")
         return True
 
+    def _download_file_bytes(self, remote_path: str) -> bytes | None:
+        """Download raw file bytes for document analysis commands."""
+        normalized_path = self._normalize_remote_path(remote_path)
+        response = self._request(
+            "GET",
+            self._get_full_url(normalized_path),
+            operation=f"reading file '{normalized_path}'",
+            timeout=TRANSFER_TIMEOUT,
+            expected_statuses={200},
+        )
+        if response is None:
+            return None
+        return response.content
+
+    def _decode_text_bytes(self, content: bytes) -> str:
+        """Decode common text payloads using a small encoding fallback chain."""
+        for encoding in ("utf-8-sig", "utf-8", "latin-1"):
+            try:
+                return content.decode(encoding)
+            except UnicodeDecodeError:
+                continue
+        return content.decode("utf-8", errors="replace")
+
+    def _extract_docx_text(self, content: bytes) -> str:
+        """Extract visible text from a DOCX document."""
+        try:
+            with zipfile.ZipFile(io.BytesIO(content)) as archive:
+                document_xml = archive.read("word/document.xml")
+        except (KeyError, zipfile.BadZipFile):
+            return ""
+
+        try:
+            root = ET.fromstring(document_xml)
+        except ET.ParseError:
+            return ""
+
+        parts = [segment.strip() for segment in root.itertext() if segment and segment.strip()]
+        return " ".join(parts)
+
+    def _extract_pdf_text(self, content: bytes) -> str:
+        """Extract text from a PDF when an optional parser is available."""
+        try:
+            from pypdf import PdfReader
+        except ImportError:
+            return ""
+
+        try:
+            reader = PdfReader(io.BytesIO(content))
+            pages = [(page.extract_text() or "").strip() for page in reader.pages]
+        except Exception:
+            return ""
+
+        return "\n".join(page for page in pages if page)
+
+    def _normalize_analysis_text(self, text: str) -> str:
+        """Normalize extracted text for summarization / Q&A flows."""
+        return re.sub(r"\s+", " ", text).strip()
+
+    def _tokenize(self, text: str) -> list[str]:
+        """Tokenize text for lightweight scoring."""
+        tokens = re.findall(r"[A-Za-z0-9ăâîșşțţ-]+", text.lower())
+        return [token for token in tokens if len(token) > 2 and token not in STOPWORDS]
+
+    def _split_sentences(self, text: str) -> list[str]:
+        """Split text into coarse sentence-like chunks."""
+        return [chunk.strip() for chunk in re.split(r"(?<=[.!?])\s+", text) if chunk.strip()]
+
+    def extract_text(self, remote_path: str, max_chars: int = 12000) -> dict[str, Any] | None:
+        """Extract readable text from a supported file type."""
+        normalized_path = self._normalize_remote_path(remote_path)
+        extension = Path(normalized_path).suffix.lower()
+        content = self._download_file_bytes(normalized_path)
+        if content is None:
+            return None
+
+        if extension in TEXT_FILE_EXTENSIONS:
+            raw_text = self._decode_text_bytes(content)
+        elif extension == ".docx":
+            raw_text = self._extract_docx_text(content)
+        elif extension == ".pdf":
+            raw_text = self._extract_pdf_text(content)
+        else:
+            print(f"Error extract-text: unsupported file type '{extension or 'unknown'}'")
+            return None
+
+        normalized_text = self._normalize_analysis_text(raw_text)
+        if not normalized_text:
+            print(f"Error extract-text: no readable text extracted from '{normalized_path}'")
+            return None
+
+        truncated = len(normalized_text) > max_chars
+        final_text = normalized_text[:max_chars].rstrip()
+        return {
+            "path": normalized_path,
+            "extension": extension,
+            "text": final_text,
+            "char_count": len(normalized_text),
+            "truncated": truncated,
+        }
+
+    def summarize(self, remote_path: str, max_chars: int = 12000) -> dict[str, Any] | None:
+        """Produce a grounded summary for a single file."""
+        extracted = self.extract_text(remote_path, max_chars=max_chars)
+        if extracted is None:
+            return None
+
+        text = extracted["text"]
+        sentences = self._split_sentences(text)
+        if not sentences:
+            print("Error summarize: no sentences available after extraction")
+            return None
+
+        token_counts = Counter(self._tokenize(text))
+        ranked: list[tuple[float, int, str]] = []
+        for index, sentence in enumerate(sentences):
+            sentence_tokens = self._tokenize(sentence)
+            if not sentence_tokens:
+                score = 0.0
+            else:
+                score = sum(token_counts[token] for token in sentence_tokens) / len(sentence_tokens)
+            ranked.append((score, index, sentence))
+
+        top_sentences = sorted(ranked, key=lambda item: (-item[0], item[1]))[:3]
+        ordered_sentences = [item[2] for item in sorted(top_sentences, key=lambda item: item[1])]
+        summary = " ".join(ordered_sentences) or " ".join(sentences[:3])
+        highlights = [token for token, _count in token_counts.most_common(5)]
+
+        return {
+            "path": extracted["path"],
+            "extension": extracted["extension"],
+            "summary": summary,
+            "highlights": highlights,
+            "char_count": extracted["char_count"],
+            "truncated": extracted["truncated"],
+        }
+
+    def ask_file(
+        self,
+        remote_path: str,
+        question: str,
+        max_chars: int = 12000,
+    ) -> dict[str, Any] | None:
+        """Answer a question using extractive matching over a single file."""
+        normalized_question = question.strip()
+        if not normalized_question:
+            print("Error ask-file: question cannot be empty")
+            return None
+
+        extracted = self.extract_text(remote_path, max_chars=max_chars)
+        if extracted is None:
+            return None
+
+        question_tokens = set(self._tokenize(normalized_question))
+        segments = self._split_sentences(extracted["text"])
+        if not segments:
+            print("Error ask-file: no usable segments extracted from file")
+            return None
+
+        scored_segments: list[tuple[float, str]] = []
+        for segment in segments:
+            segment_tokens = set(self._tokenize(segment))
+            overlap = len(question_tokens & segment_tokens)
+            score = overlap / max(len(question_tokens), 1)
+            scored_segments.append((score, segment))
+
+        scored_segments.sort(key=lambda item: (-item[0], -len(item[1])))
+        best_score, best_segment = scored_segments[0]
+        supporting_excerpts = [segment for score, segment in scored_segments if score > 0][:3]
+        if not supporting_excerpts:
+            supporting_excerpts = [best_segment]
+
+        confidence = "low"
+        if best_score >= 0.6:
+            confidence = "high"
+        elif best_score >= 0.3:
+            confidence = "medium"
+
+        return {
+            "path": extracted["path"],
+            "question": normalized_question,
+            "answer": best_segment,
+            "confidence": confidence,
+            "supporting_excerpts": supporting_excerpts,
+            "truncated": extracted["truncated"],
+        }
+
 
 def print_json(data: Any) -> None:
     """Print data as formatted JSON."""
@@ -785,6 +995,9 @@ def print_usage() -> None:
     print("  search <query> [remote_path]          Search files/folders by name")
     print("  upload <local> <remote>               Upload file")
     print("  download <remote> <local>             Download file")
+    print("  extract-text <remote_path>            Extract readable text")
+    print("  summarize <remote_path>               Summarize one file")
+    print("  ask-file <remote_path> <question>     Answer a question from one file")
     print("  mkdir <remote_path>                   Create directory")
     print("  delete <remote_path>                  Delete file or directory")
     print("  move <source> <dest>                  Move/rename")
@@ -856,6 +1069,36 @@ def run_cli(argv: list[str] | None = None) -> int:
             print("Usage: nextcloud.py download <remote_path> <local_path>")
             return 1
         return 0 if client.download(command_args[0], command_args[1]) else 3
+
+    if command == "extract-text":
+        if not command_args:
+            print("Usage: nextcloud.py extract-text <remote_path>")
+            return 1
+        result = client.extract_text(command_args[0])
+        if result is None:
+            return 3
+        print_json(result)
+        return 0
+
+    if command == "summarize":
+        if not command_args:
+            print("Usage: nextcloud.py summarize <remote_path>")
+            return 1
+        result = client.summarize(command_args[0])
+        if result is None:
+            return 3
+        print_json(result)
+        return 0
+
+    if command == "ask-file":
+        if len(command_args) < 2:
+            print("Usage: nextcloud.py ask-file <remote_path> <question>")
+            return 1
+        result = client.ask_file(command_args[0], " ".join(command_args[1:]))
+        if result is None:
+            return 3
+        print_json(result)
+        return 0
 
     if command == "mkdir":
         if not command_args:

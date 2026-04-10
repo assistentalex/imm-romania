@@ -1,6 +1,6 @@
 ---
 name: nextcloud
-description: File management for Nextcloud via WebDAV and OCS APIs. Use for uploading, downloading, listing, searching, sharing, moving, copying files and folders on Nextcloud. Triggers on phrases like "upload to nextcloud", "download from nextcloud", "list files on nextcloud", "search nextcloud", "create nextcloud share link", "nextcloud file operations".
+description: File management and document understanding for Nextcloud via WebDAV and OCS APIs. Use for uploading, downloading, listing, searching, extracting text, summarizing files, Q&A over files, sharing, moving, and copying files and folders on Nextcloud. Triggers on phrases like "upload to nextcloud", "download from nextcloud", "list files on nextcloud", "search nextcloud", "summarize nextcloud file", "ask nextcloud file", "create nextcloud share link", "nextcloud file operations".
 ---
 
 # Nextcloud Module
@@ -51,6 +51,27 @@ python3 -m modules.nextcloud search contract /Clients/
 ```
 
 Returns: Matching files/folders with path, type, size, and last modified date.
+
+### extract-text
+Extract readable text from one supported file.
+
+```bash
+python3 -m modules.nextcloud extract-text /Clients/contract.docx
+```
+
+### summarize
+Create a grounded summary for one file.
+
+```bash
+python3 -m modules.nextcloud summarize /Clients/contract.docx
+```
+
+### ask-file
+Answer a question using one file as the source.
+
+```bash
+python3 -m modules.nextcloud ask-file /Clients/contract.docx "When is the renewal due?"
+```
 
 ### upload
 Upload a local file to Nextcloud.
@@ -135,6 +156,8 @@ python3 -m modules.nextcloud share-revoke 42
 
 - Nextcloud WebDAV uses user ID (not username) in paths - the script resolves this automatically
 - Search currently matches file/folder names and paths, not document content
+- `extract-text`, `summarize`, and `ask-file` operate on one file at a time
+- PDF extraction is best-effort and works only when a compatible PDF parser is available in the environment
 - Share-link commands use the Nextcloud OCS sharing API
 - For large files, ensure sufficient timeout settings
 - Self-signed certificates may require additional configuration

@@ -111,6 +111,9 @@ Analytics Commands:
 File Commands:
     imm-romania files list [PATH] [--recursive] List files in directory
     imm-romania files search QUERY [PATH]       Search files/folders by name
+    imm-romania files extract-text PATH         Extract readable text from one file
+    imm-romania files summarize PATH            Summarize one file
+    imm-romania files ask-file PATH QUESTION    Answer a question from one file
     imm-romania files upload LOCAL REMOTE       Upload file to Nextcloud
     imm-romania files download REMOTE LOCAL     Download file from Nextcloud
     imm-romania files mkdir PATH                Create directory
@@ -150,6 +153,11 @@ Examples:
 
     # Search files in Nextcloud
     imm-romania files search contract /Clients/
+
+    # Extract / summarize / ask a file
+    imm-romania files extract-text /Clients/contract.docx
+    imm-romania files summarize /Clients/contract.docx
+    imm-romania files ask-file /Clients/contract.docx When is the renewal due?
 
     # Create a share link
     imm-romania files share-create /Contracts/offer.pdf --expire-date 2026-04-30

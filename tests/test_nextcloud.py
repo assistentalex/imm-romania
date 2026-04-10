@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """Unit tests for the Nextcloud module."""
 
+import io
 import os
 import sys
 import unittest
+import zipfile
 from io import StringIO
 from unittest.mock import patch
 
@@ -51,6 +53,20 @@ class NextcloudTestCase(unittest.TestCase):
 
 class TestNextcloudClient(NextcloudTestCase):
     """Tests for Nextcloud client behavior."""
+
+    def _build_docx_bytes(self, text):
+        """Create a minimal DOCX payload for parser tests."""
+        buffer = io.BytesIO()
+        with zipfile.ZipFile(buffer, "w") as archive:
+            archive.writestr(
+                "word/document.xml",
+                (
+                    "<?xml version='1.0' encoding='UTF-8' standalone='yes'?>"
+                    "<w:document xmlns:w='http://schemas.openxmlformats.org/wordprocessingml/2006/main'>"
+                    f"<w:body><w:p><w:r><w:t>{text}</w:t></w:r></w:p></w:body></w:document>"
+                ),
+            )
+        return buffer.getvalue()
 
     def test_get_full_url_uses_user_id_and_normalized_path(self):
         client = self.create_client()
@@ -169,6 +185,70 @@ class TestNextcloudClient(NextcloudTestCase):
 
         self.assertTrue(result)
 
+    def test_extract_text_returns_plain_text_payload(self):
+        client = self.create_client()
+        response = FakeResponse(content=b"Contract renewal is due on 15 May 2026. Contact Ana for approval.")
+
+        with patch.object(client, "_request", return_value=response):
+            result = client.extract_text("/Clients/contract.txt")
+
+        self.assertEqual(result["path"], "/Clients/contract.txt")
+        self.assertIn("15 May 2026", result["text"])
+        self.assertEqual(result["extension"], ".txt")
+
+    def test_extract_text_reads_docx_payload(self):
+        client = self.create_client()
+        response = FakeResponse(content=self._build_docx_bytes("Important clause for renewal"))
+
+        with patch.object(client, "_request", return_value=response):
+            result = client.extract_text("/Clients/contract.docx")
+
+        self.assertIn("Important clause for renewal", result["text"])
+        self.assertEqual(result["extension"], ".docx")
+
+    def test_summarize_returns_grounded_summary(self):
+        client = self.create_client()
+        extracted = {
+            "path": "/Clients/contract.txt",
+            "extension": ".txt",
+            "text": (
+                "Contract renewal is due on 15 May 2026. "
+                "The client expects confirmation this week. "
+                "Finance should approve the updated price list. "
+                "Ana owns the follow-up."
+            ),
+            "char_count": 137,
+            "truncated": False,
+        }
+
+        with patch.object(client, "extract_text", return_value=extracted):
+            result = client.summarize("/Clients/contract.txt")
+
+        self.assertEqual(result["path"], "/Clients/contract.txt")
+        self.assertIn("15 May 2026", result["summary"])
+        self.assertTrue(result["highlights"])
+
+    def test_ask_file_returns_best_matching_excerpt(self):
+        client = self.create_client()
+        extracted = {
+            "path": "/Clients/contract.txt",
+            "extension": ".txt",
+            "text": (
+                "Contract renewal is due on 15 May 2026. "
+                "The client expects confirmation this week. "
+                "Finance should approve the updated price list. "
+                "Ana owns the follow-up."
+            ),
+            "char_count": 137,
+            "truncated": False,
+        }
+
+        with patch.object(client, "extract_text", return_value=extracted):
+            result = client.ask_file("/Clients/contract.txt", "When is the renewal due?")
+
+        self.assertIn("15 May 2026", result["answer"])
+        self.assertTrue(result["supporting_excerpts"])
+
 
 class TestNextcloudCli(NextcloudTestCase):
     """Tests for Nextcloud CLI behavior."""
@@ -198,6 +278,14 @@ class TestNextcloudCli(NextcloudTestCase):
 
         self.assertEqual(exit_code, 0)
         self.assertIn("Docs", stdout.getvalue())
+
+    def test_run_cli_requires_question_for_ask_file(self):
+        with patch.dict(os.environ, self.ENV, clear=False):
+            with patch("sys.stdout", new_callable=StringIO) as stdout:
+                exit_code = run_cli(["ask-file", "/Clients/contract.txt"])
+
+        self.assertEqual(exit_code, 1)
+        self.assertIn("Usage: nextcloud.py ask-file <remote_path> <question>", stdout.getvalue())
 
 
 if __name__ == "__main__":
