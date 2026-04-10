@@ -1,6 +1,6 @@
 ---
 name: nextcloud
-description: File management for Nextcloud via WebDAV and OCS APIs. Use for uploading, downloading, listing, searching, sharing, moving, copying files and folders on Nextcloud. Triggers on phrases like "upload to nextcloud", "download from nextcloud", "list files on nextcloud", "search nextcloud", "create nextcloud share link", "nextcloud file operations".
+description: File management and workflow intelligence for Nextcloud via WebDAV and OCS APIs. Use for uploading, downloading, listing, searching, extracting workflow actions, creating Exchange tasks from files, sharing, moving, and copying files and folders on Nextcloud. Triggers on phrases like "upload to nextcloud", "download from nextcloud", "list files on nextcloud", "search nextcloud", "extract actions from file", "create tasks from file", "create nextcloud share link", "nextcloud file operations".
 ---
 
 # Nextcloud Module
@@ -51,6 +51,23 @@ python3 -m modules.nextcloud search contract /Clients/
 ```
 
 Returns: Matching files/folders with path, type, size, and last modified date.
+
+### extract-actions
+Extract grounded workflow actions from one file.
+
+```bash
+python3 -m modules.nextcloud extract-actions /Clients/contract.txt
+```
+
+Returns: action items, due-date hints, owner hints, and source excerpts.
+
+### create-tasks-from-file
+Create Exchange tasks from extracted file actions.
+
+```bash
+python3 -m modules.nextcloud create-tasks-from-file /Clients/contract.txt --dry-run
+python3 -m modules.nextcloud create-tasks-from-file /Clients/contract.txt --mailbox user@example.com
+```
 
 ### upload
 Upload a local file to Nextcloud.
@@ -135,6 +152,8 @@ python3 -m modules.nextcloud share-revoke 42
 
 - Nextcloud WebDAV uses user ID (not username) in paths - the script resolves this automatically
 - Search currently matches file/folder names and paths, not document content
+- `extract-actions` and `create-tasks-from-file` work on one file at a time
+- Task creation uses Exchange delegate access when `--mailbox` is supplied
 - Share-link commands use the Nextcloud OCS sharing API
 - For large files, ensure sufficient timeout settings
 - Self-signed certificates may require additional configuration

@@ -108,6 +108,7 @@ export NEXTCLOUD_APP_PASSWORD="your-app-password"
 python3 -m modules.nextcloud list /
 python3 -m modules.nextcloud list / --recursive
 python3 -m modules.nextcloud search contract /Clients/
+python3 -m modules.nextcloud extract-actions /Clients/contract.txt
 ```
 
 ## Configurare Memory (LCM)
@@ -168,6 +169,8 @@ python3 -m modules.exchange cal today
 # Test Nextcloud
 python3 -m modules.nextcloud list /
 python3 -m modules.nextcloud search contract /Clients/
+python3 -m modules.nextcloud extract-actions /Clients/contract.txt
+python3 -m modules.nextcloud create-tasks-from-file /Clients/contract.txt --dry-run
 python3 -m modules.nextcloud share-list
 
 # Test Tasks

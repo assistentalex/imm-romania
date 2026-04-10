@@ -111,6 +111,8 @@ Analytics Commands:
 File Commands:
     imm-romania files list [PATH] [--recursive] List files in directory
     imm-romania files search QUERY [PATH]       Search files/folders by name
+    imm-romania files extract-actions PATH      Extract workflow actions from one file
+    imm-romania files create-tasks-from-file PATH [--mailbox EMAIL] [--priority LEVEL] [--dry-run]
     imm-romania files upload LOCAL REMOTE       Upload file to Nextcloud
     imm-romania files download REMOTE LOCAL     Download file from Nextcloud
     imm-romania files mkdir PATH                Create directory
@@ -150,6 +152,10 @@ Examples:
 
     # Search files in Nextcloud
     imm-romania files search contract /Clients/
+
+    # Extract workflow actions and create tasks
+    imm-romania files extract-actions /Clients/contract.txt
+    imm-romania files create-tasks-from-file /Clients/contract.txt --dry-run
 
     # Create a share link
     imm-romania files share-create /Contracts/offer.pdf --expire-date 2026-04-30
