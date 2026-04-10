@@ -88,6 +88,9 @@ imm-romania sync status                # Show sync status
 ```bash
 imm-romania files list [PATH] [--recursive]  # List files (default: /)
 imm-romania files search QUERY [PATH]        # Search files/folders by name
+imm-romania files extract-text PATH          # Extract readable text from one file
+imm-romania files summarize PATH             # Summarize one file
+imm-romania files ask-file PATH QUESTION     # Answer a question from one file
 imm-romania files upload LOCAL REMOTE        # Upload file
 imm-romania files download REMOTE LOCAL      # Download file
 imm-romania files mkdir PATH                 # Create directory
@@ -144,6 +147,9 @@ if command == 'list':
 | Connection | `files list /` | ✅ OK |
 | Recursive list | `files list / --recursive` | ⏳ Not tested |
 | Search | `files search contract /Clients/` | ⏳ Not tested |
+| Extract text | `files extract-text /Clients/contract.docx` | ⏳ Not tested |
+| Summarize | `files summarize /Clients/contract.docx` | ⏳ Not tested |
+| Ask file | `files ask-file /Clients/contract.docx "When is the renewal due?"` | ⏳ Not tested |
 | Share list | `files share-list` | ⏳ Not tested |
 | Upload | `files upload` | ⏳ Not tested |
 | Download | `files download` | ⏳ Not tested |
@@ -173,6 +179,9 @@ imm-romania tasks list
 imm-romania files list /
 imm-romania files list / --recursive
 imm-romania files search contract /Clients/
+imm-romania files extract-text /Clients/contract.docx
+imm-romania files summarize /Clients/contract.docx
+imm-romania files ask-file /Clients/contract.docx "When is the renewal due?"
 imm-romania files share-list
 imm-romania files info /some-file.txt
 ```
