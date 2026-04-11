@@ -5,6 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2026-04-11
+
+### Added
+
+- **Nextcloud document understanding**
+  - `extract-text` for supported text, DOCX, and PDF files
+  - `summarize` for grounded one-file summaries
+  - `ask-file` for extractive Q&A over a single file
+- **Nextcloud workflow intelligence**
+  - `extract-actions` for grounded action extraction with due-date and owner hints
+  - `create-tasks-from-file` to create Exchange tasks from extracted file actions
+
+### Changed
+
+- **Product boundary cleanup**
+  - IMM-Romania now focuses on Exchange + Nextcloud only
+  - MSP runtime, scripts, tests, and examples were removed from this repo
+  - MSP logic now lives in a separate dedicated skill
+- **Documentation refresh**
+  - README, SKILL, setup guide, and verification docs now describe the current CLI accurately
+- **Packaging metadata**
+  - version metadata aligned to `0.4.0`
+  - setup metadata updated for the current CLI script and recommended PDF dependency
+
+### Fixed
+
+- Unified CLI help now reflects the final Nextcloud command surface after cleanup and integration
+- Release metadata inconsistencies across `SKILL.md`, `README.md`, `VERIFICATION.md`, and `setup.py`
+
 ## [0.2.0] - 2026-03-30
 
 ### Added
@@ -116,9 +145,9 @@ If upgrading from 1.x:
 2. Update CLI commands:
    ```bash
    # Before
-   python3 scripts/cli.py mail connect
+   python3 scripts/mail.py connect
    
-   # After (still works, but new unified CLI available)
+   # After
    python3 scripts/imm-romania.py mail connect
    # Or simply
    imm-romania mail connect

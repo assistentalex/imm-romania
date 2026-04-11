@@ -1,7 +1,7 @@
 ---
 name: imm-romania
-version: 0.3.0
-description: Complete business assistant for Romanian SMEs (IMM-uri). Integrates Exchange (email, calendar, tasks, analytics), Nextcloud (file management), and persistent memory via LCM plugin. Use when the user needs email operations, calendar management, task tracking, file operations, email analytics, or combined workflows like "send report and archive copy", "create task from email", "schedule meeting with file attachment", "search conversation history", "show email statistics".
+version: 0.4.0
+description: Complete business assistant for Romanian SMEs (IMM-uri). Integrates Exchange (email, calendar, tasks, analytics), Nextcloud (file management plus document understanding and workflow extraction), and persistent memory via LCM plugin. Use when the user needs email operations, calendar management, task tracking, file operations, file summarization/Q&A, extracting actions from files, creating tasks from documents, email analytics, or combined workflows like "send report and archive copy", "create task from email", "schedule meeting with file attachment", "search conversation history", "show email statistics".
 validation: scripts/validate.sh
 ---
 
@@ -9,8 +9,8 @@ validation: scripts/validate.sh
 
 Asistent complet pentru IMM-uri din România care integrează:
 
-- **Exchange**: Email, Calendar, Tasks (on-premises 2016/2019)
-- **Nextcloud**: Gestionare fișiere și colaborare
+- **Exchange**: Email, Calendar, Tasks, Analytics (on-premises 2016/2019)
+- **Nextcloud**: Gestionare fișiere, document understanding și workflow extraction
 - **Memory**: Context persistent prin LCM plugin
 
 ## Module Disponibile
@@ -18,7 +18,7 @@ Asistent complet pentru IMM-uri din România care integrează:
 | Modul | Descriere | Comandă |
 |-------|-----------|---------|
 | **Exchange** | Email, Calendar, Tasks, Analytics | `imm-romania <mail\|cal\|tasks\|analytics\|sync>` |
-| **Nextcloud** | Gestionare fișiere | `imm-romania files <list\|upload\|download\|...>` |
+| **Nextcloud** | Fișiere, sumarizare, Q&A, extragere acțiuni | `imm-romania files <list\|search\|extract-text\|summarize\|ask-file\|extract-actions\|create-tasks-from-file\|...>` |
 | **Memory** | Context persistent | Automat via LCM plugin |
 
 ## Utilizare Rapidă
@@ -65,10 +65,6 @@ imm-romania tasks list --overdue
 # Creează
 imm-romania tasks create --subject "Review proposal" --due "+7d" --priority high
 
-# Assign task to another user (requires delegate permissions)
-imm-romania tasks create --assign-to user@example.com --subject "Review report" --due "2024-01-20"
-imm-romania tasks assign --to user@example.com --subject "Review report" --due "2024-01-20"
-
 # Completează
 imm-romania tasks complete --id TASK_ID
 ```
@@ -98,14 +94,22 @@ imm-romania analytics report --days 30
 ### Fișiere (Nextcloud)
 
 ```bash
-# Listează
+# Listează și caută
 imm-romania files list /Documents/
+imm-romania files search contract /Clients/
 
-# Upload
+# Upload / Download
 imm-romania files upload /local/report.pdf /Documents/
-
-# Download
 imm-romania files download /Documents/report.pdf /local/
+
+# Document understanding
+imm-romania files extract-text /Clients/contract.docx
+imm-romania files summarize /Clients/contract.docx
+imm-romania files ask-file /Clients/contract.docx "When is the renewal due?"
+
+# Workflow extraction
+imm-romania files extract-actions /Clients/contract.txt
+imm-romania files create-tasks-from-file /Clients/contract.txt --dry-run
 ```
 
 ## Workflow-uri Combinate
@@ -185,9 +189,9 @@ modules/
 │   ├── tasks.py       # Task operations
 │   ├── sync.py        # Sync and reminders
 │   └── ...
-├── nextcloud/          # File management (WebDAV)
+├── nextcloud/          # File management, doc understanding, workflow extraction
 │   ├── SKILL.md       # Module documentation
-│   └── nextcloud.py   # File operations
+│   └── nextcloud.py   # File operations and analysis
 └── (future modules)
 ```
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-IMM-Romania - Email, Calendar, and Tasks for Exchange on-premises.
+IMM-Romania - Exchange and Nextcloud assistant for Romanian SMEs.
 """
 
 from setuptools import setup, find_packages
@@ -10,10 +10,10 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="imm-romania",
-    version="0.2.0",
+    version="0.4.0",
     author="OpenClaw Community",
     author_email="community@openclaw.ai",
-    description="Email, Calendar, and Tasks for Exchange on-premises (2016/2019)",
+    description="Exchange and Nextcloud assistant for Romanian SMEs",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/asistent-alex/openclaw-imm-romania",
@@ -32,6 +32,7 @@ setup(
     install_requires=[
         "exchangelib>=5.0.0",
         "requests_ntlm>=1.1.0",
+        "pdfplumber>=0.10.0",
     ],
     extras_require={
         "dev": [
@@ -39,11 +40,6 @@ setup(
         ],
     },
     scripts=[
-        "scripts/cli.py",
+        "scripts/imm-romania.py",
     ],
-    entry_points={
-        "console_scripts": [
-            "imm-romania=cli:main",
-        ],
-    },
 )

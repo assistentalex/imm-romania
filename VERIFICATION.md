@@ -1,7 +1,7 @@
 # IMM-Romania - Verification Report
 
 **Generated:** 2026-04-02
-**Version:** 0.3.0
+**Version:** 0.4.0
 
 ---
 

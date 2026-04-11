@@ -4,7 +4,7 @@
 
 **Exchange and Nextcloud — one assistant. Built by [Firma de AI](https://firmade.ai), supported by [Firma de IT](https://firmade.it)**
 
-[![Version](https://img.shields.io/badge/version-0.3.0-blue.svg)](https://github.com/asistent-alex/openclaw-imm-romania)
+[![Version](https://img.shields.io/badge/version-0.4.0-blue.svg)](https://github.com/asistent-alex/openclaw-imm-romania)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![OpenClaw Skill](https://img.shields.io/badge/OpenClaw-Skill-green.svg)](https://clawhub.ai)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-brightgreen.svg)](https://www.python.org/)
@@ -49,21 +49,39 @@ Conecțiune completă la Exchange on-premises (2016/2019) prin EWS.
 
 > 💡 **Acces delegat** — Folosește `--mailbox` pentru a lucra cu mailbox-ul unui coleg (cu permisiuni Editor)
 
-### 📁 Nextcloud — Fișiere & Partajări
+### 📁 Nextcloud — Fișiere, Document Understanding & Workflow
 
-Gestionează fișiere pe Nextcloud prin WebDAV + OCS API.
+Gestionează fișiere pe Nextcloud prin WebDAV + OCS API și extrage context util din documente.
 
 | Ce poți face | Comandă |
 |---|---|
-| Listează fișiere | `nextcloud files list /calea/catre/folder` |
-| Upload fișier | `nextcloud files upload local.pdf /Documente/` |
-| Download fișier | `nextcloud files download /Documente/raport.pdf` |
-| Creează folder | `nextcloud files mkdir /Documente/Nou` |
-| Partajări | `nextcloud share list` |
+| Listează fișiere | `imm-romania files list /Documente/` |
+| Caută fișiere | `imm-romania files search contract /Clienti/` |
+| Upload fișier | `imm-romania files upload local.pdf /Documente/` |
+| Download fișier | `imm-romania files download /Documente/raport.pdf /tmp/raport.pdf` |
+| Extrage text | `imm-romania files extract-text /Clienti/contract.docx` |
+| Rezumă un document | `imm-romania files summarize /Clienti/contract.docx` |
+| Pune întrebări pe un fișier | `imm-romania files ask-file /Clienti/contract.docx "Când expiră?"` |
+| Extrage acțiuni | `imm-romania files extract-actions /Clienti/contract.txt` |
+| Creează task-uri din fișier | `imm-romania files create-tasks-from-file /Clienti/contract.txt --dry-run` |
+| Creează folder | `imm-romania files mkdir /Documente/Nou` |
+| Partajări | `imm-romania files share-list` |
 
 ### 🧠 Memory — Context Persistent
 
 Păstrează istoria conversațiilor între sesiuni prin LCM plugin. Nu configurezi nimic — funcționează automat.
+
+## ✨ Noutăți în 0.4.0
+
+- IMM-Romania rămâne concentrat pe **Exchange + Nextcloud**
+- logica MSP a fost extrasă într-un skill separat
+- Nextcloud are acum document understanding:
+  - `extract-text`
+  - `summarize`
+  - `ask-file`
+- Nextcloud are acum workflow intelligence:
+  - `extract-actions`
+  - `create-tasks-from-file`
 
 ## 🛠️ Configurare
 
@@ -122,6 +140,8 @@ Skill-uri din aceeași familie, construite sub umbrela [Firma de AI](https://fir
 - [x] Exchange Calendar (list, create, today, week)
 - [x] Exchange Tasks (CRUD + delegat)
 - [x] Nextcloud Files (upload, download, organize)
+- [x] Nextcloud Document Understanding (extract, summarize, Q&A)
+- [x] Nextcloud Workflow Extraction (actions → Exchange tasks)
 - [ ] Exchange Contacts
 - [ ] Email Templates
 - [ ] Calendar Scheduling (find free slots)
