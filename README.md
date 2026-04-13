@@ -38,13 +38,14 @@ Conecțiune completă la Exchange on-premises (2016/2019) prin EWS.
 
 | Ce poți face | Comandă |
 |---|---|
-| Citește emailuri | `mail list` · `mail read` · `mail get --id X` |
+| Citește emailuri | `mail read` · `mail read --unread` · `mail get --id X` |
 | Trimite email | `mail send --to x@y.com --subject "Salut"` |
-| Calendar azi | `cal today` |
-| Calendar săptămână | `cal week` |
+| Calendar azi | `cal today` sau `calendar today` |
+| Calendar săptămână | `cal week` sau `calendar week` |
 | Creează task | `tasks create --subject "Facturi" --due 2026-04-15` |
 | Listează task-uri | `tasks list` · `tasks list --mailbox coleg@firma.ro` |
-| Marchează ca citit | `mail mark-all-read` |
+| Marchează emailuri ca citite | `mail mark-all-read` |
+| Mută un task în Deleted Items | `tasks trash --id TASK_ID` |
 | Statistici inbox | `analytics stats` |
 
 > 💡 **Acces delegat** — Folosește `--mailbox` pentru a lucra cu mailbox-ul unui coleg (cu permisiuni Editor)
@@ -63,7 +64,7 @@ Gestionează fișiere pe Nextcloud prin WebDAV + OCS API și extrage context uti
 | Rezumă un document | `imm-romania files summarize /Clienti/contract.docx` |
 | Pune întrebări pe un fișier | `imm-romania files ask-file /Clienti/contract.docx "Când expiră?"` |
 | Extrage acțiuni | `imm-romania files extract-actions /Clienti/contract.txt` |
-| Creează task-uri din fișier | `imm-romania files create-tasks-from-file /Clienti/contract.txt --dry-run` |
+| Preview / creează task-uri din fișier | `imm-romania files create-tasks-from-file /Clienti/contract.txt` · `imm-romania files create-tasks-from-file /Clienti/contract.txt --select 1,2 --execute` |
 | Creează folder | `imm-romania files mkdir /Documente/Nou` |
 | Partajări | `imm-romania files share-list` |
 
@@ -81,7 +82,7 @@ Păstrează istoria conversațiilor între sesiuni prin LCM plugin. Nu configure
   - `ask-file`
 - Nextcloud are acum workflow intelligence:
   - `extract-actions`
-  - `create-tasks-from-file`
+  - `create-tasks-from-file` cu preview-first, selecție și execuție explicită
 
 ## 🛠️ Configurare
 
@@ -97,7 +98,7 @@ export EXCHANGE_EMAIL="cont@firma.ro"
 export EXCHANGE_VERIFY_SSL="false"
 ```
 
-Sau rulează `imm-romania exchange connect` pentru configurare interactivă.
+Sau rulează `imm-romania mail connect` pentru verificarea rapidă a conexiunii Exchange.
 
 </details>
 
@@ -118,7 +119,8 @@ export NEXTCLOUD_APP_PASSWORD="parola-app"  # Settings > Security > App Password
 ```bash
 cd ~/.openclaw/skills/
 git clone https://github.com/asistent-alex/openclaw-imm-romania.git
-pip3 install exchangelib requests requests_ntlm
+cd openclaw-imm-romania
+pip3 install -r requirements.txt
 ```
 
 </details>

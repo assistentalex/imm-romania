@@ -1,69 +1,57 @@
 # IMM-Romania Setup Guide
 
-Ghid complet de instalare și configurare pentru IMM-Romania skill.
+Ghid practic de instalare, configurare și verificare pentru skill-ul IMM-Romania.
 
 ## Cuprins
 
-1. [Cerințe de Sistem](#cerințe-de-sistem)
+1. [Cerințe de sistem](#cerințe-de-sistem)
 2. [Instalare](#instalare)
 3. [Configurare Exchange](#configurare-exchange)
 4. [Configurare Nextcloud](#configurare-nextcloud)
 5. [Configurare Memory (LCM)](#configurare-memory-lcm)
-6. [Verificare Instalare](#verificare-instalare)
+6. [Verificare rapidă](#verificare-rapidă)
 7. [Troubleshooting](#troubleshooting)
 
-## Cerințe de Sistem
+## Cerințe de sistem
 
-- Python 3.8+
+- Python 3.10+
 - OpenClaw instalat și configurat
-- Exchange Server 2016/2019 (on-premises)
-- Nextcloud instance (optional)
-- Conexiune la serverele respective
-
-### Dependențe Python
-
-```bash
-pip install exchangelib requests requests_ntlm
-```
+- Exchange Server 2016/2019 (on-premises) pentru modulele Exchange
+- Nextcloud pentru modulul `files`
+- Acces de rețea la serviciile de mai sus
 
 ## Instalare
 
-### 1. Instalare Skill
+### Varianta recomandată: prin ClawHub
 
 ```bash
-# Copiază skill-ul în directorul OpenClaw
-cp -r imm-romania ~/.openclaw/skills/
-
-# Sau din sursă
-cd ~/.openclaw/skills/
-git clone https://github.com/your-org/imm-romania.git
+clawhub install imm-romania
 ```
 
-### 2. Instalare Dependențe
+### Varianta manuală: din Git
 
 ```bash
-cd ~/.openclaw/skills/imm-romania
+cd ~/.openclaw/skills/
+git clone https://github.com/asistent-alex/openclaw-imm-romania.git
+cd openclaw-imm-romania
 pip install -r requirements.txt
 ```
 
 ## Configurare Exchange
 
-### Opțiunea 1: Variabile de Mediu
+### Variabile de mediu
 
 ```bash
-# Adaugă în ~/.bashrc sau ~/.zshrc
 export EXCHANGE_SERVER="https://mail.your-domain.com/EWS/Exchange.asmx"
 export EXCHANGE_USERNAME="service-account"
 export EXCHANGE_PASSWORD="your-password"
 export EXCHANGE_EMAIL="service-account@your-domain.com"
-
-# Pentru self-signed certificates
-export EXCHANGE_VERIFY_SSL="false"
+export EXCHANGE_VERIFY_SSL="false"   # doar pentru certificate self-signed
 ```
 
-### Opțiunea 2: Fișier de Configurare
+### Fișier de configurare
 
-Creează `config.yaml` în directorul skill-ului:
+Poți folosi și `config.yaml` în rădăcina skill-ului:
 
 ```yaml
 exchange:
@@ -74,27 +62,17 @@ exchange:
   verify_ssl: false
 ```
 
-### Verificare Conexiune
+### Verificare Exchange
 
 ```bash
-python3 -m modules.exchange mail connect
+imm-romania mail connect
+imm-romania cal today
+imm-romania tasks list
 ```
-
-Dacă conexiunea eșuează cu SSL error, verifică:
-1. Certificate self-signed → setează `verify_ssl: false`
-2. Porturi blocate → verifică firewall
-3. Credențiale → verifică username/password
 
 ## Configurare Nextcloud
 
-### 1. Generare App Password
-
-1. Autentifică-te în Nextcloud
-2. mergi la Settings → Security → Devices & sessions
-3. Click "Create new app password"
-4. Copiază password-ul generat
-
-### 2. Variabile de Mediu
+### Variabile de mediu
 
 ```bash
 export NEXTCLOUD_URL="https://cloud.your-domain.com"
@@ -102,19 +80,27 @@ export NEXTCLOUD_USERNAME="your-username"
 export NEXTCLOUD_APP_PASSWORD="your-app-password"
 ```
 
-### 3. Verificare Conexiune
+### Cum obții un App Password
+
+1. Intră în Nextcloud
+2. Mergi la **Settings → Security → Devices & sessions**
+3. Creează un nou **app password**
+4. Folosește parola generată în `NEXTCLOUD_APP_PASSWORD`
+
+### Verificare Nextcloud
 
 ```bash
-python3 -m modules.nextcloud list /
-python3 -m modules.nextcloud list / --recursive
-python3 -m modules.nextcloud search contract /Clients/
-python3 -m modules.nextcloud summarize /Clients/contract.docx
-python3 -m modules.nextcloud extract-actions /Clients/contract.txt
+imm-romania files list /
+imm-romania files search contract /Clients/
+imm-romania files summarize /Clients/contract.docx
+imm-romania files extract-actions /Clients/contract.txt
 ```
 
 ## Configurare Memory (LCM)
 
-### Instalare Plugin
+Integrarea LCM este opțională, dar recomandată pentru context persistent între sesiuni.
+
+### Instalare plugin
 
 ```bash
 openclaw plugins install @martian-engineering/lossless-claw
@@ -143,105 +129,104 @@ Adaugă în `~/.openclaw/openclaw.json`:
 }
 ```
 
-### Verificare
-
-LCM rulează automat. Verifică existența DB-ului:
+### Verificare LCM
 
 ```bash
+openclaw plugins list
 ls -la ~/.openclaw/lcm.db
 ```
 
-## Verificare Instalare
+## Verificare rapidă
 
-Rulează testele:
-
-```bash
-cd ~/.openclaw/skills/imm-romania
-python3 -m pytest tests/
-```
-
-Sau manual:
+Rulează din repo sau după instalarea CLI-ului:
 
 ```bash
-# Test Exchange
-python3 -m modules.exchange mail connect
-python3 -m modules.exchange cal today
+# Exchange
+imm-romania mail connect
+imm-romania mail read --limit 5
+imm-romania cal today
+imm-romania tasks list
+imm-romania analytics stats --days 7
 
-# Test Nextcloud
-python3 -m modules.nextcloud list /
-python3 -m modules.nextcloud search contract /Clients/
-python3 -m modules.nextcloud extract-text /Clients/contract.docx
-python3 -m modules.nextcloud summarize /Clients/contract.docx
-python3 -m modules.nextcloud ask-file /Clients/contract.docx "When is the renewal due?"
-python3 -m modules.nextcloud extract-actions /Clients/contract.txt
-python3 -m modules.nextcloud create-tasks-from-file /Clients/contract.txt --dry-run
-python3 -m modules.nextcloud share-list
-
-# Test Tasks
-python3 -m modules.exchange tasks list
+# Nextcloud
+imm-romania files list /
+imm-romania files search contract /Clients/
+imm-romania files extract-text /Clients/contract.docx
+imm-romania files summarize /Clients/contract.docx
+imm-romania files ask-file /Clients/contract.docx "When is the renewal due?"
+imm-romania files extract-actions /Clients/contract.txt
+imm-romania files create-tasks-from-file /Clients/contract.txt
+imm-romania files share-list
+imm-romania files shared
 ```
+
+### Observație importantă despre task-uri
+
+Pentru task-uri, comanda sigură de eliminare este:
+
+```bash
+imm-romania tasks trash --id TASK_ID
+```
+
+Nu documenta `tasks delete` pentru Exchange tasks în acest repo.
 
 ## Troubleshooting
 
-### Exchange SSL Error
+### Exchange SSL error
 
-```
-Error: SSL: CERTIFICATE_VERIFY_FAILED
+```text
+SSL: CERTIFICATE_VERIFY_FAILED
 ```
 
-**Soluție**: Setează `verify_ssl: false` în config sau:
+**Soluție:** setează `EXCHANGE_VERIFY_SSL="false"` doar dacă folosești certificate self-signed.
+
+### Exchange authentication failed
+
+```text
+Unauthorized
+```
+
+Verifică:
+1. username-ul
+2. parola
+3. că mailbox-ul există și are accesul necesar
+
+### Nextcloud 401 Unauthorized
+
+```text
+401 Unauthorized
+```
+
+Verifică:
+1. URL-ul complet (`https://...`)
+2. username-ul
+3. app password-ul, nu parola principală
+
+### LCM nu apare activ
+
+Verifică:
+1. plugin-ul este instalat: `openclaw plugins list`
+2. există configurația în `openclaw.json`
+3. baza de date există: `ls ~/.openclaw/lcm.db`
+
+### Module import / path issues
+
+Dacă rulezi direct din repo și ai probleme de path, folosește entrypoint-ul unificat:
 
 ```bash
-export EXCHANGE_VERIFY_SSL="false"
+cd ~/.openclaw/skills/openclaw-imm-romania
+python3 scripts/imm-romania.py mail connect
 ```
 
-### Exchange Authentication Failed
-
-```
-Error: Unauthorized
-```
-
-**Verifică**:
-1. Username corect (încearcă cu `DOMAIN\username` sau doar `username`)
-2. Password corect
-3. Contul are mailbox pe Exchange
-
-### Nextcloud Connection Failed
-
-```
-Error: 401 Unauthorized
-```
-
-**Verifică**:
-1. App password generat corect
-2. URL corect (inclusiv https://)
-3. 2FA este configurat corect
-
-### LCM Not Working
-
-**Verifică**:
-1. Plugin instalat: `openclaw plugins list`
-2. DB există: `ls ~/.openclaw/lcm.db`
-3. Config corect: `openclaw plugins show lossless-claw`
-
-### Module Import Error
-
-```
-ModuleNotFoundError: No module named 'modules.exchange'
-```
-
-**Soluție**: Rulează din rădăcina skill-ului:
+sau, dacă scriptul este instalat în PATH:
 
 ```bash
-cd ~/.openclaw/skills/imm-romania
-python3 -m modules.exchange mail connect
+imm-romania mail connect
 ```
 
-## Configurație Completă Exemplu
+## Configurație completă exemplu
 
 ```yaml
-# ~/.openclaw/skills/imm-romania/config.yaml
-
 exchange:
   server: https://mail.your-domain.com/EWS/Exchange.asmx
   username: service-account
@@ -253,22 +238,4 @@ nextcloud:
   url: https://cloud.your-domain.com
   username: your-username
   app_password: ${NEXTCLOUD_APP_PASSWORD}
-
-# LCM se configurează în openclaw.json
-```
-
-```bash
-# ~/.bashrc sau ~/.zshrc
-
-# Exchange
-export EXCHANGE_SERVER="https://mail.your-domain.com/EWS/Exchange.asmx"
-export EXCHANGE_USERNAME="service-account"
-export EXCHANGE_PASSWORD="your-password"
-export EXCHANGE_EMAIL="service-account@your-domain.com"
-export EXCHANGE_VERIFY_SSL="false"
-
-# Nextcloud
-export NEXTCLOUD_URL="https://cloud.your-domain.com"
-export NEXTCLOUD_USERNAME="your-username"
-export NEXTCLOUD_APP_PASSWORD="your-app-password"
 ```
