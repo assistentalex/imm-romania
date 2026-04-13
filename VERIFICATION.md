@@ -1,37 +1,40 @@
-# IMM-Romania - Verification Report
+# IMM-Romania - Verification Notes
 
-**Generated:** 2026-04-02
+**Last refreshed:** 2026-04-13
 **Version:** 0.4.0
 
 ---
 
-## ✅ Module Status
+## Ce este verificat aici
 
-| Module | Commands | Status | Notes |
-|--------|----------|--------|-------|
-| **Exchange** | mail, cal, tasks, analytics, sync | ✅ Working | Credentials loaded from env |
-| **Nextcloud** | files | ✅ Working (fixed) | `print_list()` added |
+Acest document a fost aliniat la suprafața CLI curentă a repo-ului și la documentația principală.
+
+În mod explicit, această actualizare confirmă:
+- comanda principală `imm-romania`
+- modulele disponibile: `mail`, `cal`, `calendar`, `tasks`, `analytics`, `sync`, `files`
+- subcomenzile expuse de help-ul curent
+- faptul că task-urile folosesc `trash`, nu `delete`
+
+Pentru verificare funcțională live împotriva Exchange / Nextcloud, rulează checklist-ul de smoke test de mai jos.
 
 ---
 
-## 📋 Command Reference (Verified)
+## ✅ Command Reference (current CLI surface)
 
 ### Mail Commands
 
 ```bash
-imm-romania mail connect              # Test connection
-imm-romania mail read                 # List emails
-imm-romania mail read --unread        # Unread only
-imm-romania mail read --limit 10      # Limit results
-imm-romania mail read --folder NAME   # Specific folder
+imm-romania mail connect
+imm-romania mail read --limit 10
+imm-romania mail read --unread
+imm-romania mail get --id ID
 imm-romania mail send --to EMAIL --subject SUBJECT --body BODY
+imm-romania mail draft --to EMAIL --subject SUBJECT --body BODY
 imm-romania mail reply --id ID --body BODY
 imm-romania mail forward --id ID --to EMAIL
-imm-romania mail draft                # Create draft
-imm-romania mail draft-reply          # Create draft reply
-imm-romania mail mark --id ID --read  # Mark as read
-imm-romania mail mark --id ID --unread # Mark as unread
-imm-romania mail mark-all-read        # Mark all unread as read
+imm-romania mail mark --id ID --read
+imm-romania mail mark --id ID --unread
+imm-romania mail mark-all-read
 imm-romania mail list-attachments --id ID
 imm-romania mail download-attachment --id ID --name FILE --output DIR
 ```
@@ -39,138 +42,107 @@ imm-romania mail download-attachment --id ID --name FILE --output DIR
 ### Calendar Commands
 
 ```bash
-imm-romania cal today                 # Today's events
-imm-romania cal week                  # This week's events
-imm-romania cal get --id ID           # Event details
+imm-romania cal connect
+imm-romania cal list --days 7
+imm-romania cal today
+imm-romania cal week
+imm-romania cal get --id ID
 imm-romania cal create --subject SUBJECT --start DATETIME [--duration MIN]
-imm-romania cal update --id ID        # Update event
-imm-romania cal delete --id ID        # Delete event
-imm-romania cal respond --id ID       # Respond to meeting
-imm-romania cal availability           # Check availability
+imm-romania cal update --id ID
+imm-romania cal delete --id ID
+imm-romania cal respond --id ID
+imm-romania cal availability
 ```
+
+Aliasul `calendar` este de asemenea acceptat de entrypoint-ul unificat.
 
 ### Tasks Commands
 
 ```bash
-imm-romania tasks connect             # Test connection
-imm-romania tasks list                # List all tasks
-imm-romania tasks list --overdue      # Overdue only
+imm-romania tasks connect
+imm-romania tasks list
+imm-romania tasks list --overdue
 imm-romania tasks list --status STATUS
-imm-romania tasks get --id ID         # Task details
+imm-romania tasks get --id ID
 imm-romania tasks create --subject SUBJECT [--due DATE] [--priority LEVEL]
-imm-romania tasks update --id ID      # Update task
-imm-romania tasks complete --id ID    # Mark completed
-imm-romania tasks delete --id ID      # Delete task
+imm-romania tasks assign --to EMAIL --subject SUBJECT [--body BODY] [--due DATE]
+imm-romania tasks update --id ID
+imm-romania tasks complete --id ID
+imm-romania tasks trash --id ID
 ```
 
 ### Analytics Commands
 
 ```bash
-imm-romania analytics stats --days N      # Email statistics
-imm-romania analytics response-time        # Response time analysis
-imm-romania analytics top-senders          # Top senders
-imm-romania analytics heatmap              # Activity heatmap
-imm-romania analytics folders              # Folder statistics
-imm-romania analytics report               # Full report
+imm-romania analytics stats --days N
+imm-romania analytics response-time
+imm-romania analytics top-senders
+imm-romania analytics heatmap
+imm-romania analytics folders
+imm-romania analytics report
 ```
 
 ### Sync Commands
 
 ```bash
-imm-romania sync sync                 # Sync tasks with Exchange
-imm-romania sync reminders             # Send email reminders
-imm-romania sync link-calendar         # Create calendar event from task
-imm-romania sync status                # Show sync status
+imm-romania sync sync
+imm-romania sync reminders [--hours N] [--dry-run]
+imm-romania sync link-calendar --id TASK_ID [--time HH:MM] [--duration MIN]
+imm-romania sync status
 ```
 
 ### Files Commands (Nextcloud)
 
 ```bash
-imm-romania files list [PATH] [--recursive]  # List files (default: /)
-imm-romania files search QUERY [PATH]        # Search files/folders by name
-imm-romania files extract-text PATH          # Extract readable text from one file
-imm-romania files summarize PATH             # Summarize one file
-imm-romania files ask-file PATH QUESTION     # Answer a question from one file
-imm-romania files extract-actions PATH       # Extract workflow actions from one file
-imm-romania files create-tasks-from-file PATH [--mailbox EMAIL] [--priority LEVEL] [--dry-run]
-imm-romania files upload LOCAL REMOTE        # Upload file
-imm-romania files download REMOTE LOCAL      # Download file
-imm-romania files mkdir PATH                 # Create directory
-imm-romania files delete PATH                # Delete file/folder
-imm-romania files move OLD NEW               # Move/rename
-imm-romania files copy SRC DEST              # Copy file
-imm-romania files info PATH                  # Get file info
-imm-romania files shared                     # Items shared with current user
+imm-romania files list [PATH] [--recursive]
+imm-romania files search QUERY [PATH]
+imm-romania files extract-text PATH
+imm-romania files summarize PATH
+imm-romania files ask-file PATH QUESTION
+imm-romania files extract-actions PATH
+imm-romania files create-tasks-from-file PATH [--mailbox EMAIL] [--priority LEVEL] [--select 1,2] [--execute]
+imm-romania files upload LOCAL REMOTE
+imm-romania files download REMOTE LOCAL
+imm-romania files mkdir PATH
+imm-romania files delete PATH
+imm-romania files move OLD NEW
+imm-romania files copy SRC DEST
+imm-romania files info PATH
+imm-romania files shared
 imm-romania files share-create PATH [--password VALUE] [--expire-date YYYY-MM-DD] [--public-upload]
-imm-romania files share-list [PATH]          # List public share links
-imm-romania files share-revoke SHARE_ID      # Revoke share link
+imm-romania files share-list [PATH]
+imm-romania files share-revoke SHARE_ID
 ```
 
 ---
 
-## 🔧 Fixed Issues
+## 🔎 Accuracy Notes
 
-### 2026-04-02: `files list` output
+### Task deletion semantics
 
-**Problem:** CLI returned data but didn't print it.
+Pentru Exchange tasks, comanda documentată corect este:
 
-**Fix:** Added `print_list(results)` call in `scripts/imm-romania.py`:
-
-```python
-if command == 'list':
-    path = command_args[0] if command_args else '/'
-    results = client.list(path)
-    if results:
-        from modules.nextcloud.nextcloud import print_list
-        print_list(results)
-    else:
-        print("(empty)")
+```bash
+imm-romania tasks trash --id TASK_ID
 ```
 
-**File:** `scripts/imm-romania.py` line ~52
+Asta mută task-ul în **Deleted Items** și este varianta sigură / recuperabilă.
+
+### File-to-task workflow semantics
+
+`create-tasks-from-file` este documentată ca workflow **preview-first**:
+- fără `--execute` → vezi propunerile
+- cu `--select ... --execute` → creezi efectiv task-urile selectate
+
+### Mail commands
+
+Comanda `draft-reply` **nu** este în suprafața CLI curentă. Documentația trebuie să folosească doar comenzile expuse mai sus.
 
 ---
 
-## 🧪 Test Results
+## 🧪 Smoke Test Checklist
 
-### Exchange
-
-| Test | Command | Result |
-|------|---------|--------|
-| Connection | `mail connect` | ✅ OK |
-| Read emails | `mail read --limit 5` | ⏳ Not tested |
-| Calendar | `cal today` | ⏳ Not tested |
-| Tasks | `tasks list` | ⏳ Not tested |
-
-### Nextcloud
-
-| Test | Command | Result |
-|------|---------|--------|
-| Connection | `files list /` | ✅ OK |
-| Recursive list | `files list / --recursive` | ⏳ Not tested |
-| Search | `files search contract /Clients/` | ⏳ Not tested |
-| Extract text | `files extract-text /Clients/contract.docx` | ⏳ Not tested |
-| Summarize | `files summarize /Clients/contract.docx` | ⏳ Not tested |
-| Ask file | `files ask-file /Clients/contract.docx "When is the renewal due?"` | ⏳ Not tested |
-| Extract actions | `files extract-actions /Clients/contract.txt` | ⏳ Not tested |
-| Create tasks from file | `files create-tasks-from-file /Clients/contract.txt --dry-run` | ⏳ Not tested |
-| Share list | `files share-list` | ⏳ Not tested |
-| Upload | `files upload` | ⏳ Not tested |
-| Download | `files download` | ⏳ Not tested |
-
----
-
-## 📝 Known Issues
-
-1. **HTTP 404 on files list** - Was due to missing `print_list()` call. Fixed.
-
-2. **Credentials** - Must be in environment or `openclaw.json` env block. Gateway must be restarted after changes.
-
----
-
-## 🔄 Testing Checklist
-
-Before releasing, run:
+Rulează înainte de release sau demo live:
 
 ```bash
 # Exchange
@@ -178,25 +150,34 @@ imm-romania mail connect
 imm-romania mail read --limit 5
 imm-romania cal today
 imm-romania tasks list
+imm-romania analytics stats --days 7
+imm-romania sync status
 
 # Nextcloud
 imm-romania files list /
-imm-romania files list / --recursive
 imm-romania files search contract /Clients/
 imm-romania files extract-text /Clients/contract.docx
 imm-romania files summarize /Clients/contract.docx
 imm-romania files ask-file /Clients/contract.docx "When is the renewal due?"
 imm-romania files extract-actions /Clients/contract.txt
-imm-romania files create-tasks-from-file /Clients/contract.txt --dry-run
+imm-romania files create-tasks-from-file /Clients/contract.txt
 imm-romania files share-list
-imm-romania files info /some-file.txt
+imm-romania files shared
 ```
 
 ---
 
-## 📚 Documentation
+## 📝 Known Documentation Decisions
 
-- `SKILL.md` - Main documentation (accurate)
-- `references/setup.md` - Setup guide
-- `modules/exchange/SKILL.md` - Exchange module docs
-- `modules/nextcloud/SKILL.md` - Nextcloud module docs
+- top-level docs optimizează pentru CLI-ul unificat `imm-romania ...`
+- documentația de setup evită exemplele vechi de tip `python3 -m modules.exchange ...`
+- pentru task-uri, limbajul preferat este **trash / move to Deleted Items**, nu delete dur
+
+---
+
+## 📚 Related Docs
+
+- `README.md` — overview și quickstart
+- `SKILL.md` — descrierea skill-ului pentru OpenClaw
+- `references/setup.md` — instalare și configurare
+- `CHANGELOG.md` — istoric versiuni

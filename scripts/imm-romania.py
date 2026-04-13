@@ -87,7 +87,7 @@ Task Commands:
     imm-romania tasks list [--overdue] [--status STATUS]
     imm-romania tasks create --subject SUBJECT [--due DATE] [--priority LEVEL]
     imm-romania tasks complete --id TASK_ID
-    imm-romania tasks delete --id TASK_ID
+    imm-romania tasks trash --id TASK_ID
 
 Sync Commands:
     imm-romania sync sync                 Sync tasks with Exchange
