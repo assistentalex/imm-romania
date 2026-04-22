@@ -17,7 +17,7 @@
 
 ---
 
-NexLink connects Microsoft Exchange and Nextcloud into one practical workflow layer — email, calendar, tasks, file management, document understanding, and persistent context through OpenClaw.
+NexLink connects Microsoft Exchange and Nextcloud into one practical workflow layer — email, calendar, tasks, file management, and document understanding.
 
 > Public positioning: **Firma de AI — Exchange & Nextcloud Assistant**  
 > Internal skill / CLI name: **`nexlink`**
