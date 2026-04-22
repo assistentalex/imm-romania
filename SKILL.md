@@ -1,10 +1,13 @@
 ---
 name: nexlink
-version: 0.10.2
+version: 0.10.3
 description: Exchange & Nextcloud connector for email, calendar, tasks, files, and document workflows.
 metadata:
   openclaw:
     requires:
+      bins:
+        - python3
+        - pip3
       env:
         - EXCHANGE_SERVER
         - EXCHANGE_USERNAME
@@ -13,14 +16,32 @@ metadata:
         - NEXTCLOUD_URL
         - NEXTCLOUD_USERNAME
         - NEXTCLOUD_APP_PASSWORD
-      bins:
-        - python3
-        - pip3
+    dependencies:
+      - name: exchangelib
+        type: pip
+        version: ">=5.0.0"
+      - name: requests_ntlm
+        type: pip
+        version: ">=1.1.0"
+      - name: pdfplumber
+        type: pip
+        version: ">=0.10.0"
+        optional: true
+        description: "Document understanding features"
+      - name: pytest
+        type: pip
+        version: ">=7.0.0"
+        optional: true
+        description: "Testing framework"
     primaryEnv: EXCHANGE_SERVER
     skillKey: "nexlink"
     emoji: "🔗"
     homepage: https://github.com/asistent-alex/openclaw-nexlink
     always: false
+    author: Firma de AI
+    links:
+      homepage: https://firmade.ai
+      repository: https://github.com/asistent-alex/openclaw-nexlink
 ---
 
 # NexLink — Exchange & Nextcloud Connector
