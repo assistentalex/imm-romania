@@ -6,7 +6,7 @@
 
 **Built for [Firma de AI](https://firmade.ai), supported by [Firma de IT](https://firmade.it)**
 
-[![Version](https://img.shields.io/badge/version-0.5.0-blue.svg)](https://github.com/asistent-alex/openclaw-nexlink)
+[![Version](https://img.shields.io/badge/version-0.10.6-blue.svg)](https://github.com/asistent-alex/openclaw-nexlink)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![OpenClaw Skill](https://img.shields.io/badge/OpenClaw-Skill-green.svg)](https://clawhub.ai)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-brightgreen.svg)](https://www.python.org/)
@@ -29,6 +29,7 @@ This skill connects Exchange and Nextcloud into one practical workflow layer for
 - **Email** — read, send, draft, reply, forward, attachments
 - **Calendar** — today, week, list, create, update, respond
 - **Tasks** — list, create, complete, trash, delegate workflows
+- **Sync & Reminders** — task sync with Exchange, email reminders, calendar linking
 - **Analytics** — inbox stats, response time, top senders, heatmap, reports
 - **Files** — list, search, upload, download, move, copy, info, sharing
 - **Document understanding** — extract text, summarize, ask questions about one file
@@ -63,6 +64,8 @@ nexlink files list /
 nexlink mail read --limit 5
 nexlink cal today
 nexlink tasks list
+nexlink analytics stats --days 7
+nexlink sync status
 ```
 
 ## Main capabilities
@@ -83,7 +86,15 @@ Full Exchange on-premises (2016/2019) workflows over EWS.
 | Create task | `nexlink tasks create --subject "Follow-up" --due "+7d" --priority high` |
 | List delegated tasks | `nexlink tasks list --mailbox coleg@firma.ro` |
 | Complete / trash task | `nexlink tasks complete --id TASK_ID` · `nexlink tasks trash --id TASK_ID` |
+| Sync tasks | `nexlink sync sync` · `nexlink sync status` |
+| Send reminders | `nexlink sync reminders --hours 24` |
+| Link calendar event | `nexlink sync link-calendar --task-id TASK_ID` |
 | Inbox analytics | `nexlink analytics stats --days 30` |
+| Response time | `nexlink analytics response-time --days 7` |
+| Top senders | `nexlink analytics top-senders --limit 20` |
+| Activity heatmap | `nexlink analytics heatmap --days 30` |
+| Folder stats | `nexlink analytics folders` |
+| Full report | `nexlink analytics report --days 30` |
 
 > Delegate workflows are supported where Exchange permissions allow them.
 
@@ -98,7 +109,9 @@ Nextcloud workflows over WebDAV and OCS APIs.
 | Upload / download | `nexlink files upload /local/report.pdf /Documents/` · `nexlink files download /Documents/report.pdf /tmp/` |
 | Create / move / copy | `nexlink files mkdir /Documents/New` · `nexlink files move /old /new` · `nexlink files copy /src /dst` |
 | File info | `nexlink files info /Documents/report.pdf` |
-| Shared items / public links | `nexlink files shared` · `nexlink files share-list` · `nexlink files share-create /Contracts/offer.pdf` |
+| Shared items | `nexlink files shared` · `nexlink files share-list` |
+| Create public links | `nexlink files share-create /Contracts/offer.pdf` |
+| Delete file / folder | `nexlink files delete /Documents/old` |
 | Extract text | `nexlink files extract-text /Clients/contract.docx` |
 | Summarize a file | `nexlink files summarize /Clients/contract.docx` |
 | Ask a file | `nexlink files ask-file /Clients/contract.docx "When is the renewal due?"` |
@@ -149,6 +162,10 @@ export NEXTCLOUD_APP_PASSWORD="your-app-password"
 ```
 
 For full setup details, see [references/setup.md](references/setup.md).
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for the full version history. Latest: v0.10.6.
 
 ## Installation options
 
