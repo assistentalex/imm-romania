@@ -6,7 +6,7 @@
 
 **Built for [Firma de AI](https://firmade.ai), supported by [Firma de IT](https://firmade.it)**
 
-[![Version](https://img.shields.io/badge/version-0.11.0-blue.svg)](https://github.com/asistent-alex/openclaw-nexlink)
+[![Version](https://img.shields.io/badge/version-0.12.0-blue.svg)](https://github.com/asistent-alex/openclaw-nexlink)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![OpenClaw Skill](https://img.shields.io/badge/OpenClaw-Skill-green.svg)](https://clawhub.ai)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-brightgreen.svg)](https://www.python.org/)
@@ -86,6 +86,10 @@ Full Exchange on-premises (2016/2019) workflows over EWS.
 | Create task | `nexlink tasks create --subject "Follow-up" --due "+7d" --priority high` |
 | List delegated tasks | `nexlink tasks list --mailbox coleg@firma.ro` |
 | Complete / trash task | `nexlink tasks complete --id TASK_ID` · `nexlink tasks trash --id TASK_ID` |
+| Create contact | `nexlink contacts create --name "Jane Doe" --email "jane@example.com"` |
+| Update contact | `nexlink contacts update --id CONTACT_ID --phone "+40-722-000-000"` |
+| Delete contact | `nexlink contacts delete --id CONTACT_ID` |
+| Search contacts | `nexlink contacts search --query "Acme"` |
 | Sync tasks | `nexlink sync sync` · `nexlink sync status` |
 | Send reminders | `nexlink sync reminders --hours 24` · `nexlink sync reminders --hours 24 --to owner@example.com` |
 | Link calendar event | `nexlink sync link-calendar --task-id TASK_ID` |
@@ -110,6 +114,12 @@ Nextcloud workflows over WebDAV and OCS APIs.
 | Create / move / copy | `nexlink files mkdir /Documents/New` · `nexlink files move /old /new` · `nexlink files copy /src /dst` |
 | File info | `nexlink files info /Documents/report.pdf` |
 | Shared items | `nexlink files shared` · `nexlink files share-list` |
+| List contacts | `nexlink contacts list --source nextcloud` |
+| Get contact | `nexlink contacts get --uid CONTACT_UID --source nextcloud` |
+| Create contact | `nexlink contacts create --source nextcloud --name "Jane" --email "j@e.com"` |
+| Update contact | `nexlink contacts update --uid CONTACT_UID --source nextcloud --phone "..."` |
+| Delete contact | `nexlink contacts delete --uid CONTACT_UID --source nextcloud` |
+| Search contacts | `nexlink contacts search --source nextcloud --query "Jane"` |
 | Create public links | `nexlink files share-create /Contracts/offer.pdf` |
 | Delete file / folder | `nexlink files delete /Documents/old` |
 | Extract text | `nexlink files extract-text /Clients/contract.docx` |
@@ -166,7 +176,7 @@ For full setup details, see [references/setup.md](references/setup.md).
 
 ## Changelog
 
-See [CHANGELOG.md](CHANGELOG.md) for the full version history. Latest: v0.11.0.
+See [CHANGELOG.md](CHANGELOG.md) for the full version history. Latest: v0.12.0.
 
 ## Installation options
 

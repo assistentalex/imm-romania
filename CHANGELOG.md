@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.12.0] - 2026-04-28
+
+### Added
+
+- **Exchange contacts module** — full CRUD + search via EWS
+  - `nexlink contacts list|get|create|update|delete|search`
+  - Server-side search with Q() filter (display_name, given_name, surname, company_name, email)
+  - Safe delete via `move_to_trash()`
+- **Nextcloud contacts module** — CardDAV contacts with auto-discovered principal
+  - `nexlink contacts addressbooks|list|get|create|update|delete|search --source nextcloud`
+  - vCard ↔ dict conversion
+  - Automatic DAV principal discovery (handles GUID-based principals)
+  - Cached principal resolution (avoids PROPFIND per call)
+- **Integration tests** — 11 Exchange live + 12 Nextcloud live tests
+
+### Fixed
+
+- **`_get_contacts_folder`** was returning `account.contacts.root` (MailFolder) instead of `account.contacts`
+- **`ContactPhoneNumbers` removed in exchangelib 5.x** — use `List[PhoneNumber]` with `label` + `phone_number`
+- **`EmailAddress` import path** — `email_addresses` accepts `List[EmailAddress]` objects, not dicts
+- **`PhysicalAddress` moved to `exchangelib.indexed_properties`** — import from `exchangelib.properties` raised `ImportError`
+- **Nextcloud DAV principal mismatch** — `_dav_base_path()` used login username but Nextcloud may use a GUID; now auto-discovers via PROPFIND
+
 ## [0.11.0] - 2026-04-25
 
 ### Added
