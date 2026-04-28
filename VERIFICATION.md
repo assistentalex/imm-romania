@@ -1,4 +1,4 @@
-# NexLink - Verification Notes
+# NextLink - Verification Notes
 
 **Last refreshed:** 2026-04-13
 **Version:** 0.4.0

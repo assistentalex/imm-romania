@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-NexLink - Unified CLI for Email, Calendar, Tasks, Files, and Contacts.
+NextLink - Unified CLI for Email, Calendar, Tasks, Files, and Contacts.
 
 Orchestrates Exchange (mail, calendar, tasks) and Nextcloud (files) operations,
 plus Contacts from both sources.
@@ -16,7 +16,7 @@ sys.path.insert(0, SKILL_ROOT)
 
 
 def main():
-    """Main entry point for NexLink CLI."""
+    """Main entry point for NextLink CLI."""
     if len(sys.argv) < 2:
         print_usage()
         sys.exit(1)
@@ -91,9 +91,17 @@ def _run_contacts(args):
         i += 1
 
     if source == 'exchange':
-        from modules.exchange.cli import main as exchange_main
-        sys.argv = [sys.argv[0], 'contacts', command] + remaining
-        exchange_main()
+        import argparse
+        from modules.exchange.contacts import add_parser as ex_add_parser
+        parser = argparse.ArgumentParser(prog='nexlink contacts', add_help=False)
+        sub = parser.add_subparsers(dest='contact_cmd')
+        ex_add_parser(sub)
+        ex_args = parser.parse_args([command] + remaining)
+        if hasattr(ex_args, 'func'):
+            ex_args.func(ex_args)
+        else:
+            parser.print_help()
+            sys.exit(1)
 
     elif source == 'nextcloud':
         _run_nc_contacts(command, remaining)
@@ -131,7 +139,7 @@ def _run_nc_contacts(command, remaining):
 def print_usage():
     """Print usage information."""
     print("""
-NexLink - Unified CLI for Email, Calendar, Tasks, Files, and Contacts
+NextLink - Unified CLI for Email, Calendar, Tasks, Files, and Contacts
 
 Usage:
     nexlink <module> <command> [options]

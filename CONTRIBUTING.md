@@ -1,4 +1,4 @@
-# Contributing to OpenClaw NexLink
+# Contributing to OpenClaw NextLink
 
 Thank you for your interest in contributing!
 

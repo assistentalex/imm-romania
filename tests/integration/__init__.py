@@ -1,1 +1,1 @@
-"""Integration tests for NexLink sync operations."""
+"""Integration tests for NextLink sync operations."""

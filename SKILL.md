@@ -1,5 +1,5 @@
 ---
-name: nexlink
+name: nextlink
 version: 0.12.0
 description: Exchange & Nextcloud connector for cross-workflow automation — email, calendar, tasks, file management, document understanding (summarize, Q&A, action extraction), contacts, analytics, and persistent memory integration.
 metadata:
@@ -35,7 +35,7 @@ metadata:
         optional: true
         description: "Testing framework"
     primaryEnv: EXCHANGE_SERVER
-    skillKey: "nexlink"
+    skillKey: "nextlink"
     emoji: "🔗"
     homepage: https://github.com/asistent-alex/openclaw-nexlink
     always: false
@@ -45,7 +45,7 @@ metadata:
       repository: https://github.com/asistent-alex/openclaw-nexlink
 ---
 
-# NexLink — Exchange & Nextcloud Connector
+# NextLink — Exchange & Nextcloud Connector
 
 **Built by [Firma de AI](https://firmade.ai), supported by [Firma de IT](https://firmade.it).**
 

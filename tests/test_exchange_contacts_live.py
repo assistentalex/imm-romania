@@ -70,7 +70,7 @@ def _ensure_contact(account, name: str, **fields) -> object:
     """Create a contact and return it. Caller must clean up.
 
     Imports Contact/PhoneNumber directly from exchangelib
-    rather than the NexLink module (which may have try/except None).
+    rather than the NextLink module (which may have try/except None).
     """
     from exchangelib import Contact
     from exchangelib.indexed_properties import PhoneNumber, EmailAddress
@@ -211,7 +211,7 @@ class TestExchangeContactsLive:
             mobile=mobile,
             org=org,
             title=title,
-            note="Created by NexLink live test",
+            note="Created by NextLink live test",
         )
 
         try:
@@ -222,7 +222,7 @@ class TestExchangeContactsLive:
             assert d["mobile"] == mobile
             assert d["org"] == org
             assert d["title"] == title
-            assert d["note"] == "Created by NexLink live test"
+            assert d["note"] == "Created by NextLink live test"
         finally:
             contact.move_to_trash()
 

@@ -222,7 +222,7 @@ class TestNextcloudContactsLive:
         mobile = "+40-722-222-222"
         org = "TestOrg Inc"
         title = "Integration Tester"
-        note = "Created by NexLink live test"
+        note = "Created by NextLink live test"
 
         uid = _nc_create_contact(name, email=email, phone=phone, mobile=mobile, org=org, title=title, note=note)
 

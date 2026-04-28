@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-NexLink - Unified CLI for Exchange on-premises operations.
+NextLink - Unified CLI for Exchange on-premises operations.
 
 Commands:
   mail      - Email operations (read, send, reply, etc.)
@@ -29,7 +29,7 @@ from utils import add_json_argument
 
 
 def main():
-    """Main entry point for NexLink CLI."""
+    """Main entry point for NextLink CLI."""
     parser = argparse.ArgumentParser(
         prog="nexlink",
         description="Email, Calendar, and Tasks for Exchange on-premises (2016/2019).",

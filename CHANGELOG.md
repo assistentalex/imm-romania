@@ -50,11 +50,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- **Complete rebrand: imm-romania → NexLink**
+- **Complete rebrand: imm-romania → NextLink**
   - Skill name, CLI command, folder, script, all references updated
   - GitHub repo renamed to `openclaw-nexlink`
   - ClawHub slug: `nexlink`
-  - Public name: **NexLink — Exchange & Nextcloud Connector**
+  - Public name: **NextLink — Exchange & Nextcloud Connector**
   - Built by Firma de AI, supported by Firma de IT
 
 ## [0.5.1] - 2026-04-11
@@ -72,7 +72,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - **Product boundary cleanup**
-  - NexLink now focuses on Exchange + Nextcloud only
+  - NextLink now focuses on Exchange + Nextcloud only
   - MSP runtime, scripts, tests, and examples were removed from this repo
   - MSP logic now lives in a separate dedicated skill
 - **Documentation refresh**

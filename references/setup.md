@@ -1,6 +1,6 @@
-# NexLink Setup Guide
+# NextLink Setup Guide
 
-Ghid practic de instalare, configurare și verificare pentru skill-ul NexLink.
+Ghid practic de instalare, configurare și verificare pentru skill-ul NextLink.
 
 ## Cuprins
 

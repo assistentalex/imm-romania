@@ -1,5 +1,5 @@
 """
-Integration tests for NexLink Exchange sync operations.
+Integration tests for NextLink Exchange sync operations.
 
 These tests mock EWS and Nextcloud APIs to validate sync behavior
 without hitting real servers.

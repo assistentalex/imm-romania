@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Contract tests for the Exchange module in NexLink.
+Contract tests for the Exchange module in NextLink.
 These tests validate the current public structure and utility behavior,
 not legacy import paths or obsolete API assumptions.
 """
