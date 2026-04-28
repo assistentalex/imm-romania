@@ -1,12 +1,12 @@
-# About NextLink
+# About NexLink
 
-## What is NextLink?
+## What is NexLink?
 
-NextLink is an OpenClaw skill that connects **Microsoft Exchange** and **Nextcloud** into one practical workflow layer. It gives teams a single assistant interface for email, calendar, tasks, file management, and document understanding.
+NexLink is an OpenClaw skill that connects **Microsoft Exchange** and **Nextcloud** into one practical workflow layer. It gives teams a single assistant interface for email, calendar, tasks, file management, and document understanding.
 
 ## Built for Teams That Use Exchange + Nextcloud
 
-If your organization runs **Microsoft Exchange** (on-premises or hybrid) and **Nextcloud** for file storage, NextLink eliminates the context switching between mail client, calendar, task manager, and file browser.
+If your organization runs **Microsoft Exchange** (on-premises or hybrid) and **Nextcloud** for file storage, NexLink eliminates the context switching between mail client, calendar, task manager, and file browser.
 
 ## What You Can Do
 
@@ -28,7 +28,7 @@ If your organization runs **Microsoft Exchange** (on-premises or hybrid) and **N
 
 ## How It Works
 
-NextLink uses:
+NexLink uses:
 - **EWS (Exchange Web Services)** for Exchange operations
 - **WebDAV + OCS APIs** for Nextcloud file operations
 - **OpenClaw skill framework** for integration with the assistant layer

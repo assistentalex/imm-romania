@@ -1,6 +1,6 @@
 <div align="center">
 
-# NextLink — Exchange & Nextcloud Connector
+# NexLink — Exchange & Nextcloud Connector
 
 **Email, files, tasks, and document workflows for teams**
 
@@ -20,7 +20,7 @@
 
 ---
 
-NextLink connects Microsoft Exchange and Nextcloud into one practical workflow layer — email, calendar, tasks, file management, and document understanding.
+NexLink connects Microsoft Exchange and Nextcloud into one practical workflow layer — email, calendar, tasks, file management, and document understanding.
 
 > Public positioning: **Firma de AI — Exchange & Nextcloud Assistant**  
 > Internal skill / CLI name: **`nexlink`**
