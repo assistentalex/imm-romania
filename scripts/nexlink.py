@@ -33,6 +33,10 @@ def main():
         sys.argv = [sys.argv[0], normalized_module] + args
         exchange_main()
 
+    elif module == 'youtube':
+        from modules.youtube.youtube import run_cli as youtube_run_cli
+        sys.exit(youtube_run_cli(args))
+
     elif module in ('files', 'nextcloud', 'nc'):
         from modules.nextcloud.nextcloud import run_cli as nextcloud_run_cli
 
@@ -155,6 +159,7 @@ Modules:
     sync        Task sync and reminders (Exchange)
     files       File operations (Nextcloud)
     contacts    Contact operations (Exchange + Nextcloud)
+    youtube     YouTube transcript extraction
 
 Email Commands:
     nexlink mail connect              Test Exchange connection
@@ -271,6 +276,13 @@ Examples:
 
     # Create a share link
     nexlink files share-create /Contracts/offer.pdf --expire-date 2026-04-30
+
+    # YouTube transcript extraction
+    nexlink youtube transcript <url>              # Get plain text transcript (English)
+    nexlink youtube transcript <url> --lang ro    # Romanian transcript
+    nexlink youtube transcript <url> --format json  # JSON with timestamps
+    nexlink youtube transcript <url> --save       # Also save to Nextcloud
+    nexlink youtube languages <url>               # List available caption languages
 
 For more information, see references/setup.md
 """)

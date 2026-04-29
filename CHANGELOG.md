@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.13.0] - 2026-04-29
+
+### Added
+
+- **YouTube Transcript Extraction** — full module with `nexlink youtube transcript` and `nexlink youtube languages` commands
+- Supports all URL formats (watch, youtu.be, shorts, embed) and raw video IDs
+- Automatic language fallback (e.g. `--lang ro,en`)
+- Output formats: text (plain) and JSON (timestamped snippets)
+- Save to Nextcloud with `--save` flag (saves to `/Alex's Assistant/YouTube/`)
+- Comprehensive test suite: 23 tests covering ID extraction, error handling, formatting, live API, and CLI integration
+
 ## [0.12.0] - 2026-04-28
 
 ### Added

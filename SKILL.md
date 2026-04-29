@@ -1,6 +1,6 @@
 ---
 name: nexlink
-version: 0.12.0
+version: 0.13.0
 description: Exchange & Nextcloud connector for cross-workflow automation — email, calendar, tasks, file management, document understanding (summarize, Q&A, action extraction), contacts, analytics, and persistent memory integration.
 metadata:
   openclaw:
@@ -28,6 +28,9 @@ metadata:
         type: pip
         version: ">=0.10.0"
         optional: true
+      - name: youtube-transcript-api
+        type: pip
+        version: ">=1.0.0"
         description: "Document understanding features"
       - name: pytest
         type: pip
@@ -60,6 +63,7 @@ This skill connects Exchange and Nextcloud into one practical workflow layer for
 |--------|-------------|---------|
 | **Exchange** | Email, Calendar, Tasks, Analytics, Contacts | `nexlink <mail\|cal\|tasks\|analytics\|sync\|contacts>` |
 | **Nextcloud** | Files, sharing, summarization, Q&A, action extraction, Contacts (CardDAV) | `nexlink files <...> \| nexlink contacts --source nextcloud <...>` |
+| **YouTube** | Transcript extraction with language fallback | `nexlink youtube transcript\|languages <url>` |
 
 ## What it solves
 
@@ -204,7 +208,29 @@ nexlink files ask-file /Clients/contract.docx "When is the renewal due?"
 nexlink files extract-actions /Clients/contract.txt
 nexlink files create-tasks-from-file /Clients/contract.txt
 nexlink files create-tasks-from-file /Clients/contract.txt --select 1,2 --execute
+
+### YouTube Transcripts
+
+Extract video subtitles with automatic language fallback:
+
+```bash
+# Basic text transcript (English)
+nexlink youtube transcript https://www.youtube.com/watch?v=VIDEO_ID
+
+# Romanian transcript with JSON output (includes timestamps)
+nexlink youtube transcript https://youtu.be/VIDEO_ID --lang ro --format json
+
+# Try multiple languages, fall back in order
+nexlink youtube transcript VIDEO_ID --lang ro,en
+
+# Save transcript to Nextcloud
+nexlink youtube transcript VIDEO_ID --lang en --save
+
+# List available caption languages
+nexlink youtube languages https://www.youtube.com/watch?v=VIDEO_ID
 ```
+
+**Note:** Requires `pip install youtube-transcript-api` for the underlying library.
 
 ## Combined Workflows
 
