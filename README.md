@@ -6,7 +6,7 @@
 
 **Built for [Firma de AI](https://firmade.ai), supported by [Firma de IT](https://firmade.it)**
 
-[![Version](https://img.shields.io/badge/version-0.12.0-blue.svg)](https://github.com/asistent-alex/openclaw-nexlink)
+[![Version](https://img.shields.io/badge/version-0.13.0-blue.svg)](https://github.com/asistent-alex/openclaw-nexlink)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![OpenClaw Skill](https://img.shields.io/badge/OpenClaw-Skill-green.svg)](https://clawhub.ai)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-brightgreen.svg)](https://www.python.org/)
@@ -131,6 +131,20 @@ Nextcloud workflows over WebDAV and OCS APIs.
 | Extract actions | `nexlink files extract-actions /Clients/contract.txt` |
 | Create tasks from file | `nexlink files create-tasks-from-file /Clients/contract.txt --select 1,2 --execute` |
 
+### YouTube — Transcript Extraction
+
+Extract video captions/subtitles with automatic language fallback:
+
+| What you can do | Command |
+|---|---|
+| Get transcript (text) | `nexlink youtube transcript <url>` |
+| Get transcript (JSON) | `nexlink youtube transcript <url> --format json` |
+| Language fallback | `nexlink youtube transcript <url> --lang ro,en` |
+| Save to Nextcloud | `nexlink youtube transcript <url> --save` |
+| List available languages | `nexlink youtube languages <url>` |
+
+Supports all YouTube URL formats (watch, youtu.be, shorts, embed) and raw video IDs.
+
 ### Combined workflows
 
 #### Send a Nextcloud file by email
@@ -179,7 +193,7 @@ For full setup details, see [references/setup.md](references/setup.md).
 
 ## Changelog
 
-See [CHANGELOG.md](CHANGELOG.md) for the full version history. Latest: v0.12.0.
+See [CHANGELOG.md](CHANGELOG.md) for the full version history. Latest: v0.13.0.
 
 ## Installation options
 
