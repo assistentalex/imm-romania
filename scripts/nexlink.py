@@ -22,16 +22,13 @@ def main():
         sys.exit(1)
 
     # Parse global flags before routing to modules.
-    # --no-branding: suppress brand line in public outputs.
     # --no-memory: disable LCM persistent memory for this session.
-    global_flags = {"--no-branding", "--no-memory"}
+    global_flags = {"--no-memory"}
     module_args = []
     i = 1
     while i < len(sys.argv):
         arg = sys.argv[i]
-        if arg == "--no-branding":
-            os.environ["NEXLINK_NO_BRANDING"] = "1"
-        elif arg == "--no-memory":
+        if arg == "--no-memory":
             os.environ["NEXLINK_NO_MEMORY"] = "1"
         else:
             module_args.append(arg)
@@ -169,7 +166,6 @@ Usage:
 
 Global Options:
     --json          Output results in JSON format
-    --no-branding   Suppress brand line in public outputs
     --no-memory     Disable LCM persistent memory for this session
 
 Modules:

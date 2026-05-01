@@ -50,10 +50,12 @@ def get_sync_state() -> Dict[str, Any]:
 
 
 def save_sync_state(state: Dict[str, Any]) -> None:
-    """Save sync state to file."""
+    """Save sync state to file with restrictive permissions."""
     SYNC_STATE_DIR.mkdir(parents=True, exist_ok=True)
+    SYNC_STATE_DIR.chmod(0o700)
     with open(SYNC_STATE_FILE, "w") as f:
         json.dump(state, f, indent=2, default=str)
+    SYNC_STATE_FILE.chmod(0o600)
 
 
 def cmd_sync(args: argparse.Namespace) -> None:

@@ -276,6 +276,7 @@ class Config:
                 else json.dumps(config_to_save, indent=2)
             )
             path_obj.write_text(content)
+            path_obj.chmod(0o600)
             print(f"Configuration saved to {path}")
         except Exception as e:
             print(f"Warning: Could not save config: {e}", file=sys.stderr)

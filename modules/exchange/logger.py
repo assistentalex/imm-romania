@@ -140,10 +140,11 @@ class Logger:
         # File handler with rotation
         if self.log_file:
             try:
-                # Ensure directory exists
+                # Ensure directory exists with restrictive permissions
                 log_dir = os.path.dirname(self.log_file)
                 if log_dir:
                     os.makedirs(log_dir, exist_ok=True)
+                    Path(log_dir).chmod(0o700)
 
                 file_handler = RotatingFileHandler(
                     self.log_file,
@@ -153,6 +154,7 @@ class Logger:
                 file_handler.setLevel(self.log_level)
                 file_handler.setFormatter(JSONFormatter())
                 self.logger.addHandler(file_handler)
+                Path(self.log_file).chmod(0o600)
             except (OSError, IOError) as e:
                 # Can't write to log file, continue with console only
                 self.logger.warning(f"Cannot write to log file {self.log_file}: {e}")
