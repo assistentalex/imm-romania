@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.15.9] - 2026-05-01
 
 ### Security (ClawScan Findings — All Phases)
 
@@ -36,6 +36,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `SECURITY.md`: Updated security model, removed `NEXLINK_AUTO_APPROVE` references
 - `references/security-best-practices.md`: Removed `NEXLINK_AUTO_APPROVE` docs, kept per-command `--yes`
 - `CHANGELOG.md`: This comprehensive entry for audit trail
+
+**Phase 5 — Branding opt-in + env metadata (Privacy-first)**
+- `BRAND.md`: Branding is now **OFF by default** (privacy-first). Enable with `NEXLINK_BRANDING=1` (opt-in)
+  - `NEXLINK_NO_BRANDING` removed; old opt-out mechanism deprecated
+- `SKILL.md`: Added `NEXLINK_BRANDING` to env vars list
+- `clawhub.json`: Added `env` field documenting all required variables
+  - Full transparency: lists all 9 required/optional env vars for ClawHub security scan
+- Closes ClawScan findings #2 (Human-Agent Trust) and #3 (Supply Chain)
+
+## [Unreleased]
 
 ## [0.15.0] - 2026-04-30
 
