@@ -24,6 +24,10 @@ metadata:
       - name: requests_ntlm
         type: pip
         version: ">=1.1.0"
+      - name: defusedxml
+        type: pip
+        version: ">=0.7.1"
+        description: "Secure XML parsing - fixes XXE vulnerability"
       - name: pdfplumber
         type: pip
         version: ">=0.10.0"
