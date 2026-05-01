@@ -17,6 +17,7 @@ metadata:
         - NEXTCLOUD_URL
         - NEXTCLOUD_USERNAME
         - NEXTCLOUD_APP_PASSWORD
+        - NEXLINK_BRANDING  # Optional: set to 1 to enable vendor branding in outputs
     dependencies:
       - name: exchangelib
         type: pip
