@@ -42,5 +42,16 @@
     "nextcloud", "exchange", "youtube", "email", "calendar", "tasks",
     "files", "contacts", "analytics", "transcript", "document-understanding",
     "security", "least-privilege", "workflow"
+  ],
+  "env": [
+    "EXCHANGE_SERVER",
+    "EXCHANGE_USERNAME",
+    "EXCHANGE_PASSWORD",
+    "EXCHANGE_EMAIL",
+    "OWNER_EMAIL",
+    "NEXTCLOUD_URL",
+    "NEXTCLOUD_USERNAME",
+    "NEXTCLOUD_APP_PASSWORD",
+    "NEXLINK_BRANDING"
   ]
 }

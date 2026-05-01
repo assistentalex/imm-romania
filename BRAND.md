@@ -2,20 +2,21 @@
 
 _All assets, messages, and outputs from this project must follow these rules._
 
-## Branding Opt-Out
+## Branding Opt-In (Privacy-First)
 
-Branding is **on by default** for public outputs (email digests, reports, analytics).
+**Branding is OFF by default** for all outputs. This protects user privacy and prevents unintended disclosure of vendor information in business communications.
 
-**To disable branding:**
-- CLI: pass `--no-branding` before the module (`nexlink --no-branding mail send ...`)
-- Env: `export NEXLINK_NO_BRANDING=1`
-- Agent config: set `NEXLINK_NO_BRANDING=1` in environment
+**To enable branding:**
+- Env: `export NEXLINK_BRANDING=1`
+- Agent config: set `NEXLINK_BRANDING=1` in environment
 
-When branding is disabled, outputs must **not** include firmade.ai / firmade.it links or "Built by Firma de AI" text.
+When branding is enabled, outputs may include firmade.ai / firmade.it links or "Built by Firma de AI" text.
 
 ---
 
-## 1. Brand Line (Obligatoriu)
+## 1. Brand Line (Optional)
+
+When branding is **enabled**, the following line may be included:
 
 **EN:**
 
@@ -25,7 +26,7 @@ When branding is disabled, outputs must **not** include firmade.ai / firmade.it 
 
 > Construit de [Firma de AI](https://firmade.ai), susținut de [Firma de IT](https://firmade.it)
 
-Această frază apare în:
+Această frază **poate** apărea în (doar când branding e activat):
 - README.md (subtitlu + footer)
 - Email digests (header + footer)
 - Orice output public (rapoarte, pagini, documentație)
